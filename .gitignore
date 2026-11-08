@@ -1,0 +1,10 @@
+node_modules/
+tools/out/
+.DS_Store
+tools/cache/
+_site/
+tools/tools/
+# not part of the game (other work in this folder)
+matematik-3-sinif-kitaplar/
+tymm-kitap-donusum-todo.md
+tymm-kitaplar.json

@@ -1,0 +1,628 @@
+{
+ "generated": "2026-11-08",
+ "tex": {
+  "aerial_grass_rock": [
+   "arm",
+   "diff",
+   "nor_gl"
+  ],
+  "boulder": [
+   "ao",
+   "diff",
+   "nor_gl"
+  ],
+  "coast_sand_01": [
+   "arm",
+   "diff",
+   "nor_gl"
+  ],
+  "coral_gravel": [
+   "arm",
+   "diff",
+   "nor_gl"
+  ],
+  "dry_ground_01": [
+   "arm",
+   "diff",
+   "nor_gl"
+  ],
+  "forest_leaves_02": [
+   "arm",
+   "diff",
+   "nor_gl"
+  ],
+  "marble_cliff_01": [
+   "arm",
+   "diff",
+   "nor_gl"
+  ],
+  "mossy_cobblestone": [
+   "arm",
+   "diff",
+   "nor_gl"
+  ],
+  "mossy_stone_wall": [
+   "arm",
+   "diff",
+   "nor_gl"
+  ],
+  "oak": [
+   "ao",
+   "diff",
+   "nor_gl"
+  ],
+  "red_sand": [
+   "arm",
+   "diff",
+   "nor_gl"
+  ],
+  "rock_boulder_cracked": [
+   "arm",
+   "diff",
+   "nor_gl"
+  ],
+  "rock_face_03": [
+   "arm",
+   "diff",
+   "nor_gl"
+  ],
+  "rock_face": [
+   "arm",
+   "diff",
+   "nor_gl"
+  ],
+  "rock_wall_08": [
+   "arm",
+   "diff",
+   "nor_gl"
+  ],
+  "rocks_ground_06": [
+   "arm",
+   "diff",
+   "nor_gl"
+  ],
+  "sand_03": [
+   "arm",
+   "diff",
+   "nor_gl"
+  ],
+  "sandstone_cracks": [
+   "arm",
+   "diff",
+   "nor_gl"
+  ],
+  "snow_02": [
+   "arm",
+   "diff",
+   "nor_gl"
+  ],
+  "stone_tiles_02": [
+   "arm",
+   "diff",
+   "nor_gl"
+  ],
+  "weathered_planks": [
+   "arm",
+   "diff",
+   "nor_gl"
+  ]
+ },
+ "hdri": {
+  "kloofendal_43d_clear_puresky": [
+   "1k",
+   "2k"
+  ],
+  "kloofendal_48d_partly_cloudy_puresky": [
+   "1k",
+   "2k"
+  ],
+  "kloofendal_misty_morning_puresky": [
+   "1k",
+   "2k"
+  ],
+  "kloppenheim_02_puresky": [
+   "1k",
+   "2k"
+  ],
+  "kloppenheim_06_puresky": [
+   "1k",
+   "2k"
+  ],
+  "qwantani_dusk_2_puresky": [
+   "1k",
+   "2k"
+  ],
+  "qwantani_noon_puresky": [
+   "1k",
+   "2k"
+  ],
+  "sky": [
+   "2k"
+  ],
+  "snow_field_puresky": [
+   "1k",
+   "2k"
+  ],
+  "wasteland_clouds_puresky": [
+   "1k",
+   "2k"
+  ]
+ },
+ "models": {
+  "Lantern_01": {
+   "bytes": 536020
+  },
+  "ball_court_stone_ring": {
+   "bytes": 79076
+  },
+  "birch_leaning": {
+   "bytes": 15340
+  },
+  "birch_mature": {
+   "bytes": 16072
+  },
+  "birch_young": {
+   "bytes": 14584
+  },
+  "boulder_01": {
+   "bytes": 578084
+  },
+  "boulder_large": {
+   "bytes": 7552
+  },
+  "boulder_medium": {
+   "bytes": 7040
+  },
+  "boulder_mossy": {
+   "bytes": 27288
+  },
+  "boulder_small": {
+   "bytes": 5432
+  },
+  "bronze_whale_statue": {
+   "bytes": 302088
+  },
+  "bush_berry": {
+   "bytes": 11552
+  },
+  "bush_flat": {
+   "bytes": 5672
+  },
+  "bush_flowering": {
+   "bytes": 14900
+  },
+  "bush_round": {
+   "bytes": 4936
+  },
+  "bush_tall": {
+   "bytes": 5676
+  },
+  "cannon_01": {
+   "bytes": 512852
+  },
+  "cliff_block": {
+   "bytes": 32512
+  },
+  "cone_f": {
+   "bytes": 146696
+  },
+  "crater": {
+   "bytes": 100984
+  },
+  "dead_snag_short": {
+   "bytes": 9732
+  },
+  "dead_snag_tall": {
+   "bytes": 18884
+  },
+  "dead_tree_trunk": {
+   "bytes": 708656
+  },
+  "dead_tree_trunk_02": {
+   "bytes": 860032
+  },
+  "fern_02": {
+   "bytes": 578992
+  },
+  "fern_clump": {
+   "bytes": 31184
+  },
+  "fern_single": {
+   "bytes": 14232
+  },
+  "flower_red": {
+   "bytes": 13872
+  },
+  "flower_white_patch": {
+   "bytes": 20608
+  },
+  "flower_yellow": {
+   "bytes": 13772
+  },
+  "geyser": {
+   "bytes": 78064
+  },
+  "gothic_statue": {
+   "bytes": 560084
+  },
+  "grass_patch": {
+   "bytes": 11216
+  },
+  "grass_tuft_short": {
+   "bytes": 5340
+  },
+  "grass_tuft_tall": {
+   "bytes": 7160
+  },
+  "hedge_block": {
+   "bytes": 2492
+  },
+  "hexago": {
+   "bytes": 101724
+  },
+  "lambis_shell": {
+   "bytes": 273352
+  },
+  "large_castle_door": {
+   "bytes": 647584
+  },
+  "lava_l": {
+   "bytes": 29536
+  },
+  "lion_head": {
+   "bytes": 540228
+  },
+  "meadow_disc": {
+   "bytes": 9884
+  },
+  "moon_rock_02": {
+   "bytes": 210852
+  },
+  "moon_rock_04": {
+   "bytes": 340436
+  },
+  "moon_rock_06": {
+   "bytes": 309644
+  },
+  "moss_patch": {
+   "bytes": 10032
+  },
+  "mushroom_group": {
+   "bytes": 40544
+  },
+  "namaqualand_boulder_02": {
+   "bytes": 720564
+  },
+  "oak_ancient": {
+   "bytes": 50332
+  },
+  "oak_mature": {
+   "bytes": 38304
+  },
+  "oak_sapling": {
+   "bytes": 26116
+  },
+  "oak_young": {
+   "bytes": 26428
+  },
+  "obsidi": {
+   "bytes": 50840
+  },
+  "ocean_buoy": {
+   "bytes": 598980
+  },
+  "old_military_crate": {
+   "bytes": 285312
+  },
+  "palm_leaning": {
+   "bytes": 54268
+  },
+  "palm_mature": {
+   "bytes": 60744
+  },
+  "palm_young": {
+   "bytes": 40588
+  },
+  "pebble_cluster": {
+   "bytes": 13796
+  },
+  "pine_columnar": {
+   "bytes": 26580
+  },
+  "pine_sapling": {
+   "bytes": 24976
+  },
+  "pine_spreading": {
+   "bytes": 25612
+  },
+  "pine_windswept": {
+   "bytes": 25648
+  },
+  "rock_pile": {
+   "bytes": 13472
+  },
+  "root_cluster": {
+   "bytes": 20224
+  },
+  "rope_b": {
+   "bytes": 153164
+  },
+  "sapling_pair": {
+   "bytes": 29572
+  },
+  "serpent_balustrade_head": {
+   "bytes": 90984
+  },
+  "slab_flat": {
+   "bytes": 3152
+  },
+  "slab_upright": {
+   "bytes": 2872
+  },
+  "spatte": {
+   "bytes": 107748
+  },
+  "stump_mossy": {
+   "bytes": 6704
+  },
+  "stump_oak": {
+   "bytes": 33352
+  },
+  "stump_pine": {
+   "bytes": 22020
+  },
+  "summit_shrine": {
+   "bytes": 350748
+  },
+  "topiary_cone": {
+   "bytes": 8196
+  },
+  "treasure_chest": {
+   "bytes": 1003168
+  },
+  "tree_oak": {
+   "bytes": 38304
+  },
+  "tree_palm": {
+   "bytes": 60744
+  },
+  "tree_pine": {
+   "bytes": 26580
+  },
+  "wooden_lantern_01": {
+   "bytes": 916912
+  }
+ },
+ "sfx": [
+  "amb_birds",
+  "amb_cave_drips",
+  "amb_cave_howl",
+  "amb_cave_stream",
+  "amb_cave_wind",
+  "amb_jungle_amazon",
+  "amb_jungle_asia",
+  "amb_jungle_day",
+  "amb_jungle_night",
+  "amb_jungle_rain",
+  "amb_rainforest_night",
+  "amb_temple_airy",
+  "amb_temple_drone",
+  "amb_temple_drone_wind",
+  "amb_waves",
+  "bonus_warm_10",
+  "boss_angry_squeak",
+  "boss_footstep",
+  "boss_growl_dino",
+  "boss_growl_dog",
+  "boss_grunt",
+  "boss_laugh_1",
+  "boss_laugh_2",
+  "boss_ogre_growl",
+  "boss_roar_1",
+  "boss_roar_2",
+  "boss_roar_dino",
+  "bounce",
+  "bubble_pop",
+  "bubble_pop_designed",
+  "bubble_pop_wet",
+  "bubbles_pop_asc",
+  "cannon_blast_scifi",
+  "cannon_fire",
+  "cannon_launch",
+  "cannon_rocket",
+  "cannon_slingshot",
+  "cartoon_rise_short",
+  "checkpoint",
+  "coin",
+  "countdown_beeps",
+  "countdown_blips",
+  "countdown_console",
+  "countdown_organ",
+  "countdown_retro",
+  "crystal",
+  "door_lock_click",
+  "door_unlock",
+  "enemy_hit",
+  "enemy_hit_arrow",
+  "enemy_hit_bounce",
+  "enemy_hit_metal",
+  "enemy_hit_punch_1",
+  "enemy_hit_punch_2",
+  "enemy_hit_punch_3",
+  "fire_crackle_loop",
+  "fire_pit_loop_1",
+  "fire_pit_loop_2",
+  "gain_life",
+  "heart_pickup_1",
+  "heart_pickup_2",
+  "heart_pickup_mobile",
+  "heart_pickup_warm",
+  "hurt",
+  "ice_break_1",
+  "ice_break_2",
+  "ice_crack_cc0",
+  "ice_crack_long",
+  "ice_crack_low",
+  "ice_crack_short",
+  "ice_melt",
+  "ice_skate_glide",
+  "ice_skate_loop",
+  "ice_skate_scrape",
+  "ice_slide",
+  "ice_slide_bash",
+  "jump",
+  "key_jingle_foley",
+  "key_pickup",
+  "key_pickup_twinkle",
+  "lava_bubble_pop",
+  "lava_bubbles_loop",
+  "lava_bubbles_small",
+  "lava_flow_loop",
+  "lava_rumble_loop",
+  "level_complete_dreamy",
+  "level_complete_kids",
+  "level_complete_organ",
+  "level_complete_regal",
+  "level_complete_retro",
+  "level_complete_synth",
+  "level_complete_synth_1",
+  "level_complete_trumpets",
+  "level_end_keys",
+  "lever_click_1",
+  "lever_click_2",
+  "lever_gate",
+  "lever_pull_long",
+  "medal_fairy_dust",
+  "medal_glissando",
+  "medal_tropical",
+  "music_adventure_journey",
+  "music_boss_epic_loop",
+  "music_boss_epic_loop_2",
+  "music_calm_guitar",
+  "music_calm_night_1",
+  "music_calm_plucked",
+  "music_chiptune_afterglow",
+  "music_chiptune_glimmer",
+  "music_chiptune_happy",
+  "music_chiptune_stardust",
+  "music_island_loop",
+  "music_kids_butterfly",
+  "music_kids_daft_cat",
+  "music_kids_mr_jelly",
+  "music_kids_playing",
+  "music_kids_round",
+  "music_kids_warm_pads",
+  "music_menu_cheeky_monkey",
+  "music_menu_easy_cheesy",
+  "music_merry_go_round",
+  "music_mystery_bed",
+  "music_overworld_joy",
+  "music_space_race",
+  "music_spooky_staircase",
+  "music_spooky_stinger",
+  "music_spooky_trick",
+  "music_tropical_banana",
+  "music_tropical_dawn",
+  "music_tropical_showtell",
+  "music_tropical_steel",
+  "music_uke_loop_cheeky",
+  "music_uke_loop_fills",
+  "music_uke_loop_lazy",
+  "music_uke_loop_mid",
+  "music_winter_dance",
+  "music_winter_rabbit",
+  "one_up",
+  "one_up_tone",
+  "pause_in",
+  "pause_music_calm",
+  "pause_music_loop",
+  "pause_out",
+  "platform_crack_warn",
+  "portal",
+  "pound",
+  "power_up",
+  "rock_crumble_1",
+  "rock_crumble_2",
+  "rock_crumble_3",
+  "rock_landslide",
+  "slide_scree",
+  "slime_big_growl",
+  "slime_bubbles",
+  "slime_gurgle",
+  "slime_move",
+  "slime_squish",
+  "snow_blizzard_amb",
+  "snow_wind_cc0",
+  "snow_wind_icy",
+  "snow_wind_loop_1",
+  "snow_wind_loop_2",
+  "snow_wind_strong",
+  "spiky_roll_ball",
+  "spiky_roll_loop",
+  "spiky_roll_metal",
+  "spiky_roll_small",
+  "spiky_roll_wood",
+  "splash",
+  "spring_boing",
+  "spring_bounces",
+  "spring_twang_hi",
+  "star_jingle_1",
+  "star_jingle_2",
+  "star_wand_ping",
+  "step_grass_1",
+  "step_grass_2",
+  "step_grass_3",
+  "step_grass_4",
+  "step_sand_1",
+  "step_sand_2",
+  "step_sand_3",
+  "step_sand_dry",
+  "step_snow_1",
+  "step_snow_2",
+  "step_snow_3",
+  "step_snow_4",
+  "step_stone_1",
+  "step_stone_2",
+  "step_stone_3",
+  "step_stone_4",
+  "stomp",
+  "switch_click",
+  "switch_click_bright",
+  "switch_toggle",
+  "temple_mystery_sting",
+  "temple_twinkle",
+  "timer_quiz_20s",
+  "timer_tick",
+  "timer_ticks_fast",
+  "ui_back",
+  "ui_blip_8bit",
+  "ui_click",
+  "ui_click_digital",
+  "ui_hover_1",
+  "ui_hover_2",
+  "ui_negative_blip",
+  "ui_negative_sparkle",
+  "ui_open",
+  "ui_select_1",
+  "ui_select_2",
+  "ui_select_scifi",
+  "uke_ascend",
+  "uke_descend",
+  "uke_impact",
+  "vibes_descend",
+  "whoosh_dash_1",
+  "whoosh_dash_2",
+  "whoosh_rise",
+  "win",
+  "wind_airy",
+  "wind_alpine",
+  "wind_breeze",
+  "wind_howl_loop",
+  "wind_sky_loop",
+  "wind_strong",
+  "wood_break",
+  "wood_rotten_break",
+  "wood_snap_1",
+  "wood_snap_2"
+ ]
+}

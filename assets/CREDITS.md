@@ -1,0 +1,356 @@
+# Asset credits
+
+- **HDRI**: Kloofendal 48d Partly Cloudy (Pure Sky) — Poly Haven, CC0 (https://polyhaven.com/a/kloofendal_48d_partly_cloudy_puresky)
+- **Textures (Poly Haven, CC0)**: aerial_grass_rock, rock_face, stone_tiles_02, coast_sand_01 (1k JPG)
+- **Textures (FreePBR, freepbr.com)**: Damp Mossy Boulders, Oak Wood Bare — free for use under FreePBR license
+- **Ocean shader**: three.js `objects/Water.js` — based on jbouny/ocean (https://github.com/jbouny/ocean), MIT; `waternormals.jpg` from three.js examples
+- **Sounds**: see sfx/ (Zapsplat, standard license)
+
+## Sound effects (assets/sfx) — Zapsplat (https://www.zapsplat.com), ZapSplat Standard License
+- jump: Cartoon spring, boing, jump, jaw harp, very short (ZapSplat)
+- coin: Retro arcade game coin collect tone 1 (ZapSplat)
+- stomp: Cartoon, wet splat, squelch 1 (ZapSplat)
+- hurt: Cute cartoon character, high pitched vocalisation, says ouch (ZapSplat)
+- bounce: Cartoon bounce, boing or spring 1 (ZapSplat)
+- pound: Body impact, hit ground with a heavy thud, version 1 (ZapSplat)
+- splash: Large object fall fast into water, whoosh into large splash, version 1 (ZapSplat)
+- crystal: Ancient game, magic glitter sparkle, touch or collect (Epic Stock Media via Zapsplat)
+- checkpoint: Game tone, bell chime, positive notification 1 (ZapSplat)
+- portal: Fantasy magical impact, open magical door or portal (ZapSplat)
+- win: Harp roll into trumpet fanfare then fireworks (ZapSplat)
+- amb_waves: Mediterranean sea, calm ocean waves on rocks, pebbles and sand (PMSFX via Zapsplat), trimmed to 60 s loop
+- amb_birds: Cooloola National Park subtropical rainforest morning birds (Dylan Barfield via Zapsplat), trimmed to 75 s loop
+
+Attribution line for the game credits: "Sound effects obtained from https://www.zapsplat.com"
+
+## 3D models (assets/models)
+- **Boulder 01** (boulder_01) — Poly Haven, CC0, by Rico Cilliers (https://polyhaven.com/a/boulder_01); simplified ratio 0.15, textures ≤512px
+
+## 3D models (3dassets.dev, CC0)
+- **tree_oak.glb** — Stylized Oak Tree Mature (Stylized Trees and Rocks Kit) by 3dassets, CC0 1.0 Universal, https://3dassets.dev/assets/stylized-trees-and-rocks-kit-oak-mature-658d06b2
+- **tree_pine.glb** — Stylized Pine Tree Tall (Stylized Trees and Rocks Kit) by 3dassets, CC0 1.0 Universal, https://3dassets.dev/assets/stylized-trees-and-rocks-kit-pine-columnar-55ce0610
+- **tree_palm.glb** — Stylized Palm Tree Mature (Stylized Trees and Rocks Kit) by 3dassets, CC0 1.0 Universal, https://3dassets.dev/assets/stylized-trees-and-rocks-kit-palm-mature-beca4440
+
+## Poly Haven textures & HDRIs (CC0)
+- **HDRI Kloppenheim 06 (Pure Sky)** (kloppenheim_06_puresky) — Poly Haven, CC0 (https://polyhaven.com/a/kloppenheim_06_puresky)
+
+## 3D models (3dassets.dev, CC0)
+- **pine_sapling.glb** — Stylized Pine Tree Sapling (Stylized Trees and Rocks Kit) by 3dassets, CC0 1.0 Universal, https://3dassets.dev/assets/stylized-trees-and-rocks-kit-pine-sapling-4abac962
+- **pine_columnar.glb** — Stylized Pine Tree Tall (Stylized Trees and Rocks Kit) by 3dassets, CC0 1.0 Universal, https://3dassets.dev/assets/stylized-trees-and-rocks-kit-pine-columnar-55ce0610
+- **pine_spreading.glb** — Stylized Pine Tree Wide (Stylized Trees and Rocks Kit) by 3dassets, CC0 1.0 Universal, https://3dassets.dev/assets/stylized-trees-and-rocks-kit-pine-spreading-2b39aa69
+- **pine_windswept.glb** — Stylized Pine Tree Windswept (Stylized Trees and Rocks Kit) by 3dassets, CC0 1.0 Universal, https://3dassets.dev/assets/stylized-trees-and-rocks-kit-pine-windswept-ca12cb57
+- **oak_sapling.glb** — Stylized Oak Tree Sapling (Stylized Trees and Rocks Kit) by 3dassets, CC0 1.0 Universal, https://3dassets.dev/assets/stylized-trees-and-rocks-kit-oak-sapling-83501565
+- **oak_young.glb** — Stylized Oak Tree Young (Stylized Trees and Rocks Kit) by 3dassets, CC0 1.0 Universal, https://3dassets.dev/assets/stylized-trees-and-rocks-kit-oak-young-df76d76e
+- **oak_mature.glb** — Stylized Oak Tree Mature (Stylized Trees and Rocks Kit) by 3dassets, CC0 1.0 Universal, https://3dassets.dev/assets/stylized-trees-and-rocks-kit-oak-mature-658d06b2
+- **oak_ancient.glb** — Stylized Ancient Oak Tree (Stylized Trees and Rocks Kit) by 3dassets, CC0 1.0 Universal, https://3dassets.dev/assets/stylized-trees-and-rocks-kit-oak-ancient-daebddc2
+- **birch_young.glb** — Stylized Birch Tree Young (Stylized Trees and Rocks Kit) by 3dassets, CC0 1.0 Universal, https://3dassets.dev/assets/stylized-trees-and-rocks-kit-birch-young-dff1c6c5
+- **birch_mature.glb** — Stylized Birch Tree Mature (Stylized Trees and Rocks Kit) by 3dassets, CC0 1.0 Universal, https://3dassets.dev/assets/stylized-trees-and-rocks-kit-birch-mature-7f9524d1
+- **birch_leaning.glb** — Stylized Birch Tree Leaning (Stylized Trees and Rocks Kit) by 3dassets, CC0 1.0 Universal, https://3dassets.dev/assets/stylized-trees-and-rocks-kit-birch-leaning-47fbd9d8
+- **palm_young.glb** — Stylized Palm Tree Young (Stylized Trees and Rocks Kit) by 3dassets, CC0 1.0 Universal, https://3dassets.dev/assets/stylized-trees-and-rocks-kit-palm-young-c72a9dcb
+- **palm_mature.glb** — Stylized Palm Tree Mature (Stylized Trees and Rocks Kit) by 3dassets, CC0 1.0 Universal, https://3dassets.dev/assets/stylized-trees-and-rocks-kit-palm-mature-beca4440
+- **palm_leaning.glb** — Stylized Palm Tree Leaning (Stylized Trees and Rocks Kit) by 3dassets, CC0 1.0 Universal, https://3dassets.dev/assets/stylized-trees-and-rocks-kit-palm-leaning-54932643
+- **dead_snag_tall.glb** — Stylized Dead Tree Tall (Stylized Trees and Rocks Kit) by 3dassets, CC0 1.0 Universal, https://3dassets.dev/assets/stylized-trees-and-rocks-kit-dead-snag-tall-8402263e
+- **dead_snag_short.glb** — Stylized Dead Tree Short (Stylized Trees and Rocks Kit) by 3dassets, CC0 1.0 Universal, https://3dassets.dev/assets/stylized-trees-and-rocks-kit-dead-snag-short-0457b77b
+- **stump_pine.glb** — Stylized Pine Tree Stump (Stylized Trees and Rocks Kit) by 3dassets, CC0 1.0 Universal, https://3dassets.dev/assets/stylized-trees-and-rocks-kit-stump-pine-3999f04b
+- **stump_oak.glb** — Stylized Oak Tree Stump (Stylized Trees and Rocks Kit) by 3dassets, CC0 1.0 Universal, https://3dassets.dev/assets/stylized-trees-and-rocks-kit-stump-oak-57c0438a
+- **stump_mossy.glb** — Stylized Mossy Tree Stump (Stylized Trees and Rocks Kit) by 3dassets, CC0 1.0 Universal, https://3dassets.dev/assets/stylized-trees-and-rocks-kit-stump-mossy-6b12eb1b
+- **root_cluster.glb** — Stylized Exposed Tree Roots (Stylized Trees and Rocks Kit) by 3dassets, CC0 1.0 Universal, https://3dassets.dev/assets/stylized-trees-and-rocks-kit-root-cluster-44942960
+- **bush_round.glb** — Stylized Round Bush (Stylized Trees and Rocks Kit) by 3dassets, CC0 1.0 Universal, https://3dassets.dev/assets/stylized-trees-and-rocks-kit-bush-round-b06cf36c
+- **bush_tall.glb** — Stylized Tall Bush (Stylized Trees and Rocks Kit) by 3dassets, CC0 1.0 Universal, https://3dassets.dev/assets/stylized-trees-and-rocks-kit-bush-tall-4b56bdb8
+- **bush_flat.glb** — Stylized Flat Bush (Stylized Trees and Rocks Kit) by 3dassets, CC0 1.0 Universal, https://3dassets.dev/assets/stylized-trees-and-rocks-kit-bush-flat-48781c84
+- **bush_flowering.glb** — Stylized Flowering Bush (Stylized Trees and Rocks Kit) by 3dassets, CC0 1.0 Universal, https://3dassets.dev/assets/stylized-trees-and-rocks-kit-bush-flowering-6e410c7f
+- **bush_berry.glb** — Stylized Berry Bush (Stylized Trees and Rocks Kit) by 3dassets, CC0 1.0 Universal, https://3dassets.dev/assets/stylized-trees-and-rocks-kit-bush-berry-c65307ae
+- **sapling_pair.glb** — Stylized Sapling Pair (Stylized Trees and Rocks Kit) by 3dassets, CC0 1.0 Universal, https://3dassets.dev/assets/stylized-trees-and-rocks-kit-sapling-pair-d9450eac
+- **hedge_block.glb** — Stylized Hedge Block (Stylized Trees and Rocks Kit) by 3dassets, CC0 1.0 Universal, https://3dassets.dev/assets/stylized-trees-and-rocks-kit-hedge-block-dcfe3855
+- **topiary_cone.glb** — Stylized Topiary Cone (Stylized Trees and Rocks Kit) by 3dassets, CC0 1.0 Universal, https://3dassets.dev/assets/stylized-trees-and-rocks-kit-topiary-cone-f056a7b8
+- **grass_tuft_short.glb** — Stylized Grass Tuft Short (Stylized Trees and Rocks Kit) by 3dassets, CC0 1.0 Universal, https://3dassets.dev/assets/stylized-trees-and-rocks-kit-grass-tuft-short-e8744fed
+- **grass_tuft_tall.glb** — Stylized Grass Tuft Tall (Stylized Trees and Rocks Kit) by 3dassets, CC0 1.0 Universal, https://3dassets.dev/assets/stylized-trees-and-rocks-kit-grass-tuft-tall-be191773
+- **grass_patch.glb** — Stylized Grass Patch (Stylized Trees and Rocks Kit) by 3dassets, CC0 1.0 Universal, https://3dassets.dev/assets/stylized-trees-and-rocks-kit-grass-patch-b18b3255
+- **fern_clump.glb** — Stylized Fern Clump (Stylized Trees and Rocks Kit) by 3dassets, CC0 1.0 Universal, https://3dassets.dev/assets/stylized-trees-and-rocks-kit-fern-clump-52137440
+- **fern_single.glb** — Stylized Fern Single (Stylized Trees and Rocks Kit) by 3dassets, CC0 1.0 Universal, https://3dassets.dev/assets/stylized-trees-and-rocks-kit-fern-single-db912ec2
+- **flower_red.glb** — Stylized Red Flowers (Stylized Trees and Rocks Kit) by 3dassets, CC0 1.0 Universal, https://3dassets.dev/assets/stylized-trees-and-rocks-kit-flower-red-07e8b96f
+- **flower_yellow.glb** — Stylized Yellow Flowers (Stylized Trees and Rocks Kit) by 3dassets, CC0 1.0 Universal, https://3dassets.dev/assets/stylized-trees-and-rocks-kit-flower-yellow-5d7e0e00
+- **flower_white_patch.glb** — Stylized White Flower Patch (Stylized Trees and Rocks Kit) by 3dassets, CC0 1.0 Universal, https://3dassets.dev/assets/stylized-trees-and-rocks-kit-flower-white-patch-9ead5ba8
+- **mushroom_group.glb** — Stylized Mushroom Group (Stylized Trees and Rocks Kit) by 3dassets, CC0 1.0 Universal, https://3dassets.dev/assets/stylized-trees-and-rocks-kit-mushroom-group-55ee1945
+- **moss_patch.glb** — Stylized Moss Patch (Stylized Trees and Rocks Kit) by 3dassets, CC0 1.0 Universal, https://3dassets.dev/assets/stylized-trees-and-rocks-kit-moss-patch-345c2369
+- **pebble_cluster.glb** — Stylized Pebbles (Stylized Trees and Rocks Kit) by 3dassets, CC0 1.0 Universal, https://3dassets.dev/assets/stylized-trees-and-rocks-kit-pebble-cluster-0e3898ef
+- **boulder_small.glb** — Stylized Boulder Small (Stylized Trees and Rocks Kit) by 3dassets, CC0 1.0 Universal, https://3dassets.dev/assets/stylized-trees-and-rocks-kit-boulder-small-20abc131
+- **boulder_medium.glb** — Stylized Boulder Medium (Stylized Trees and Rocks Kit) by 3dassets, CC0 1.0 Universal, https://3dassets.dev/assets/stylized-trees-and-rocks-kit-boulder-medium-8776c3b7
+- **boulder_large.glb** — Stylized Boulder Large (Stylized Trees and Rocks Kit) by 3dassets, CC0 1.0 Universal, https://3dassets.dev/assets/stylized-trees-and-rocks-kit-boulder-large-a97dd24d
+- **boulder_mossy.glb** — Stylized Mossy Boulder (Stylized Trees and Rocks Kit) by 3dassets, CC0 1.0 Universal, https://3dassets.dev/assets/stylized-trees-and-rocks-kit-boulder-mossy-c374f016
+- **slab_upright.glb** — Stylized Standing Stone Slab (Stylized Trees and Rocks Kit) by 3dassets, CC0 1.0 Universal, https://3dassets.dev/assets/stylized-trees-and-rocks-kit-slab-upright-e019959a
+- **slab_flat.glb** — Stylized Flat Rock Slab (Stylized Trees and Rocks Kit) by 3dassets, CC0 1.0 Universal, https://3dassets.dev/assets/stylized-trees-and-rocks-kit-slab-flat-87071e8c
+- **rock_pile.glb** — Stylized Rock Pile (Stylized Trees and Rocks Kit) by 3dassets, CC0 1.0 Universal, https://3dassets.dev/assets/stylized-trees-and-rocks-kit-rock-pile-409aeb62
+- **cliff_block.glb** — Stylized Cliff Block With Ferns (Stylized Trees and Rocks Kit) by 3dassets, CC0 1.0 Universal, https://3dassets.dev/assets/stylized-trees-and-rocks-kit-cliff-block-90c6ada6
+- **meadow_disc.glb** — Stylized Meadow Disc (Stylized Trees and Rocks Kit) by 3dassets, CC0 1.0 Universal, https://3dassets.dev/assets/stylized-trees-and-rocks-kit-meadow-disc-c11769eb
+- **Texture Weathered Planks** (weathered_planks) — Poly Haven, CC0 (https://polyhaven.com/a/weathered_planks)
+- **Texture Rocks Ground 06** (rocks_ground_06) — Poly Haven, CC0 (https://polyhaven.com/a/rocks_ground_06)
+- **Texture Rock Boulder Cracked** (rock_boulder_cracked) — Poly Haven, CC0 (https://polyhaven.com/a/rock_boulder_cracked)
+- **Texture Snow 02** (snow_02) — Poly Haven, CC0 (https://polyhaven.com/a/snow_02)
+- **Texture Rock Wall 08** (rock_wall_08) — Poly Haven, CC0 (https://polyhaven.com/a/rock_wall_08)
+- **Texture Forest Leaves 02** (forest_leaves_02) — Poly Haven, CC0 (https://polyhaven.com/a/forest_leaves_02)
+- **Texture Mossy Cobblestone** (mossy_cobblestone) — Poly Haven, CC0 (https://polyhaven.com/a/mossy_cobblestone)
+- **Texture Mossy Stone Wall** (mossy_stone_wall) — Poly Haven, CC0 (https://polyhaven.com/a/mossy_stone_wall)
+- **Texture Rock Face 03** (rock_face_03) — Poly Haven, CC0 (https://polyhaven.com/a/rock_face_03)
+- **Texture Marble Cliff 01** (marble_cliff_01) — Poly Haven, CC0 (https://polyhaven.com/a/marble_cliff_01)
+- **Texture Sand 03** (sand_03) — Poly Haven, CC0 (https://polyhaven.com/a/sand_03)
+- **Texture Coral Gravel** (coral_gravel) — Poly Haven, CC0 (https://polyhaven.com/a/coral_gravel)
+- **Texture Red Sand** (red_sand) — Poly Haven, CC0 (https://polyhaven.com/a/red_sand)
+- **Texture Sandstone Cracks** (sandstone_cracks) — Poly Haven, CC0 (https://polyhaven.com/a/sandstone_cracks)
+- **Texture Dry Ground 01** (dry_ground_01) — Poly Haven, CC0 (https://polyhaven.com/a/dry_ground_01)
+- **HDRI Wasteland Clouds (Pure Sky)** (wasteland_clouds_puresky) — Poly Haven, CC0 (https://polyhaven.com/a/wasteland_clouds_puresky)
+- **HDRI Snow Field (Pure Sky)** (snow_field_puresky) — Poly Haven, CC0 (https://polyhaven.com/a/snow_field_puresky)
+- **HDRI Kloofendal Misty Morning (Pure Sky)** (kloofendal_misty_morning_puresky) — Poly Haven, CC0 (https://polyhaven.com/a/kloofendal_misty_morning_puresky)
+- **HDRI Kloofendal 43d Clear (Pure Sky)** (kloofendal_43d_clear_puresky) — Poly Haven, CC0 (https://polyhaven.com/a/kloofendal_43d_clear_puresky)
+- **HDRI Qwantani Noon (Pure Sky)** (qwantani_noon_puresky) — Poly Haven, CC0 (https://polyhaven.com/a/qwantani_noon_puresky)
+- **HDRI Kloppenheim 02 (Pure Sky)** (kloppenheim_02_puresky) — Poly Haven, CC0 (https://polyhaven.com/a/kloppenheim_02_puresky)
+- **HDRI Qwantani Dusk 2 (Pure Sky)** (qwantani_dusk_2_puresky) — Poly Haven, CC0 (https://polyhaven.com/a/qwantani_dusk_2_puresky)
+- **HDRI Kloofendal 48d Partly Cloudy (Pure Sky)** (kloofendal_48d_partly_cloudy_puresky) — Poly Haven, CC0 (https://polyhaven.com/a/kloofendal_48d_partly_cloudy_puresky)
+- **Lantern 01** (Lantern_01) — Poly Haven, CC0, by Rajil Jose Macatangay (https://polyhaven.com/a/Lantern_01); simplified ratio 0.1, textures ≤512px
+- **Old Military Crate** (old_military_crate) — Poly Haven, CC0, by Jack Mava (https://polyhaven.com/a/old_military_crate); simplified ratio 0.1, textures ≤512px
+
+- step_grass_1: Single footstep, shoe, work boot in grass. Version 1 (ZapSplat via Zapsplat)
+- step_grass_2: Single footstep, shoe, work boot in grass. Version 2 (ZapSplat via Zapsplat)
+- step_grass_3: Single footstep, shoe, work boot in grass. Version 4 (ZapSplat via Zapsplat)
+- step_grass_4: Single footstep, shoe, work boot in grass. Version 8 (ZapSplat via Zapsplat)
+- step_stone_1: Footsteps, shoes on layer of stones on ground, single fast footstep, version 1 (ZapSplat via Zapsplat)
+- step_stone_2: Footsteps, shoes on layer of stones on ground, single fast footstep, version 2 (ZapSplat via Zapsplat)
+- step_stone_3: Footsteps, shoes on layer of stones on ground, single fast footstep, version 3 (ZapSplat via Zapsplat)
+- step_stone_4: Footsteps, shoes on layer of stones on ground, single fast footstep, version 4 (ZapSplat via Zapsplat)
+- step_sand_1: Shoe, single footstep in wet sand. Version 1 (ZapSplat via Zapsplat)
+- step_sand_2: Shoe, single footstep in wet sand. Version 2 (ZapSplat via Zapsplat)
+- step_sand_3: Shoe, single footstep in wet sand. Version 3 (ZapSplat via Zapsplat)
+- step_sand_dry: Footstep, single, flip flop on road or track lightly covered with sand. Version 20 (ZapSplat via Zapsplat)
+- step_snow_1: Single footstep in fresh snow, walking 4 (ZapSplat via Zapsplat)
+- step_snow_2: Single footstep in fresh snow, walking 5 (ZapSplat via Zapsplat)
+- step_snow_3: Single footstep in fresh snow, walking 6 (ZapSplat via Zapsplat)
+- step_snow_4: Single footstep in fresh snow, walking 7 (ZapSplat via Zapsplat)
+- slide_scree: Sneaker, shoe scuff on tiny stones, long slide (player sliding on gravel/slope) (ZapSplat via Zapsplat)
+- slime_squish: Cartoon slime, squelch, bubble, dribble (ZapSplat via Zapsplat)
+- slime_move: Cartoon, large alive slime, gooey mess, movements 1 (loop-able blob hop/crawl) (ZapSplat via Zapsplat)
+- slime_bubbles: Slime bubbles, goo, could be swamp 1 (ZapSplat via Zapsplat)
+- slime_gurgle: Cartoon slime, squelch, gurgle, drain (slime death/melt) (ZapSplat via Zapsplat)
+- slime_big_growl: Big growling bubbling slime 3 (big/boss slime) (ZapSplat via Zapsplat)
+- enemy_hit: Cartoon impact, high pitched, slightly hollow 2 (ZapSplat via Zapsplat)
+- enemy_hit_punch_1: Cartoon punch 1 (ZapSplat via Zapsplat)
+- enemy_hit_punch_2: Cartoon punch 2 (ZapSplat via Zapsplat)
+- enemy_hit_punch_3: Cartoon punch 3 (ZapSplat via Zapsplat)
+- enemy_hit_bounce: Cartoon impact, bounce 2 (soft bonk, e.g. head-bump on a block) (ZapSplat via Zapsplat)
+- enemy_hit_metal: A cartoon metal impact, hit, clang, version 1 (hitting a spiky / armored enemy) (ZapSplat via Zapsplat)
+- enemy_hit_arrow: Cartoon arrow hit target (thwip, for projectiles) (ZapSplat via Zapsplat)
+- spiky_roll_loop: Large heavy ball or boulder rolling, rumbling (loop under a rolling boulder / big spiky) (ZapSplat via Zapsplat)
+- spiky_roll_small: Glass marble roll on wooden floor 1 (small spiky patrol, pitch-shift down) (ZapSplat via Zapsplat)
+- spiky_roll_ball: Soccer ball rolling on hard ground 1 (ZapSplat via Zapsplat)
+- spiky_roll_metal: Small metal ball roll down the inside on a plastic tube 1 (ZapSplat via Zapsplat)
+- spiky_roll_wood: Solid round chunk of wood roll on paving stones 5 (ZapSplat via Zapsplat)
+- rock_crumble_1: Rock, stone or brick structure crumble, collapse, designed 9 (short) (ZapSplat via Zapsplat)
+- rock_crumble_2: Rock, stone or brick structure crumble, collapse, designed 1 (ZapSplat via Zapsplat)
+- rock_crumble_3: Rock, stone or brick structure crumble, collapse, designed 8 (ZapSplat via Zapsplat)
+- rock_landslide: Landslide, rocks and stones rumble as they fall, slide and roll, designed (big collapse) (ZapSplat via Zapsplat)
+- platform_crack_warn: Impact, hit loose ground, dirt and soil collapses and falls 14 (crumble-platform "about to fall" tick) (ZapSplat via Zapsplat)
+- wood_break: Large wood board bend, stress and splinter, breaking 3 (wooden platform/bridge break) (ZapSplat via Zapsplat)
+- wood_snap_1: Wood, twig snap in forest, stereo, medium loud, single (PMSFX via Zapsplat)
+- wood_snap_2: Wood, twig snap in forest, stereo, break, splinters (PMSFX via Zapsplat)
+- wood_rotten_break: Impact, hit old rotten tree trunk, wood breaks off and fine debris crumbles 2 (ZapSplat via Zapsplat)
+- ice_crack_short: Thin ice crack under pressure 1 (ZapSplat via Zapsplat)
+- ice_crack_cc0: Thin ice under pressure then cracks (squeak then break) (CC0 via Zapsplat)
+- ice_crack_low: Thin ice crack, lower pitched (ZapSplat via Zapsplat)
+- ice_crack_long: Ice crack 2 (ZapSplat via Zapsplat)
+- ice_break_1: Small impact, breaking ice chunk 1 (ice block shatter) (ZapSplat via Zapsplat)
+- ice_break_2: Small impact, breaking ice chunk 2 (ZapSplat via Zapsplat)
+- ice_melt: Melting ice flowing, cracking and dripping, designed 3 (melting platform) (ZapSplat via Zapsplat)
+- ice_slide: Large chunk of ice slide, movement in smooth ice (ZapSplat via Zapsplat)
+- ice_slide_bash: Chunk of ice slide and bash into others, designed (ZapSplat via Zapsplat)
+- ice_skate_glide: Ice skating, skates, glides and slides (player sliding on ice, loop) (Articulated via Zapsplat)
+- ice_skate_loop: Ice skater, constant sound of skates, designed (ZapSplat via Zapsplat)
+- ice_skate_scrape: Ice skating, skate, scrape or scratch, one leg, single rotate or twist (stop/turn) (Articulated via Zapsplat)
+- lava_flow_loop: Lava flow (the only free "lava" bed; trim to a loop) (ZapSplat via Zapsplat)
+- lava_bubbles_loop: Thick wet watery mud, gunge or gunk bubbles, bubbling, long and slow with spitting (layer over lava_flow) (ZapSplat via Zapsplat)
+- lava_bubbles_small: Wet mud, short small air bubbles, constant (ZapSplat via Zapsplat)
+- lava_bubble_pop: Wet sloppy mud, short bubble, bubbling 1 (single lava bubble burst) (ZapSplat via Zapsplat)
+- lava_rumble_loop: LFE tremor, rumble, could be earthquake, thunder or underground volcano etc, sound design 1 (ZapSplat via Zapsplat)
+- wind_sky_loop: Constant strong wind in palm trees, some gusts 1 (steady bed for sky islands) (ZapSplat via Zapsplat)
+- wind_breeze: Wind, breeze on palm trees, water in canal close by (gentle) (ZapSplat via Zapsplat)
+- wind_strong: Very strong wind, coastal storm (designed, clean) (ZapSplat via Zapsplat)
+- wind_alpine: Weather, mountain storm ambience, alpine, wind, medium strong gusts, occasional drips, forest, very remote (PMSFX via Zapsplat)
+- wind_airy: Eerie science fiction atmosphere, airy hissing wind, cold and desolate (high-altitude hiss, use quietly) (ZapSplat via Zapsplat)
+- wind_howl_loop: Designed eerie wind howl, science fiction planet atmosphere, complex, loop (too eerie for kids? audition) (Skyclad Sound via Zapsplat)
+- snow_wind_loop_1: Cold blizzard snow storm, strong wind 1 (ZapSplat via Zapsplat)
+- snow_wind_loop_2: Cold blizzard snow storm, strong wind 4 (ZapSplat via Zapsplat)
+- snow_wind_icy: Cold blizzard wind, powdered snow blown around in a howling icy wind, designed (ZapSplat via Zapsplat)
+- snow_wind_strong: Strong cold blizzard, snowstorm style wind (ZapSplat via Zapsplat)
+- snow_wind_cc0: Strong, constant blizzard style wind (CC0 via Zapsplat)
+- snow_blizzard_amb: Blizzard, snow ambience (Blastwave FX via Zapsplat)
+- amb_jungle_day: Jungle daytime ambience, insects birds and animals (Blastwave FX via Zapsplat)
+- amb_jungle_asia: Jungle, environment, ambience, insects and birds, Asia (Audio Hero via Zapsplat)
+- amb_jungle_amazon: Amazon rainforest ambience, cicada and insect noise with river in background 1 (Felix Blume via Zapsplat)
+- amb_jungle_night: Thailand, jungle night ambience, pond, insects, frogs mating 2 (FreeToUseSounds via Zapsplat)
+- amb_jungle_rain: Tropical Ambience, Rainforest rain moderately, sparse bird chirps (made as a loop, "LOOPLR") (Articulated via Zapsplat)
+- amb_rainforest_night: Rainforest ambience, summer, night time, quiet insects, distant waterfall, Eastern Australia (ZapSplat via Zapsplat)
+- amb_cave_drips: Cave ambience, water dripping and running into deeper water, stream, echoey (ZapSplat via Zapsplat)
+- amb_cave_wind: Cave ambience, water drips and splatters, subtle wind howling (ZapSplat via Zapsplat)
+- amb_cave_stream: Cave ambience, fast flowing water, running and dripping, distant (ZapSplat via Zapsplat)
+- amb_cave_howl: Cave ambience, water, stream flowing, wind howl and rumble outside (ZapSplat via Zapsplat)
+- amb_temple_drone: Dungeon ambience, cold dark and eerie droning tone, could also be cave (temple bed; keep quiet, it is "horror" tagged) (ZapSplat via Zapsplat)
+- amb_temple_drone_wind: Dungeon ambience, cold dark and eerie droning tone with howling wind outside and water drips (ZapSplat via Zapsplat)
+- amb_temple_airy: Eerie science fiction atmosphere, dark airy droning (alternative temple bed) (ZapSplat via Zapsplat)
+- temple_mystery_sting: Game sound, mystery musical stab, warm mallets (one-shot accent when entering the temple / solving a puzzle) (ZapSplat via Zapsplat)
+- temple_twinkle: Designed magical twinkle, mysterious (accent) (ZapSplat via Zapsplat)
+- fire_crackle_loop: Fire, bonfire, pine branch crackles and sizzles on fire (ZapSplat via Zapsplat)
+- fire_pit_loop_1: Fire in fire pit, flames crackle as wood and wet leaves burn 2 (ZapSplat via Zapsplat)
+- fire_pit_loop_2: Fire in fire pit, flames crackle as wood and wet leaves burn 3 (ZapSplat via Zapsplat)
+- cannon_launch: Game sound, simple retro arcade rocket fizzle and launch (ZapSplat via Zapsplat)
+- cannon_fire: Firework, small rocket launch 1 (pop + whoosh) (ZapSplat via Zapsplat)
+- cannon_rocket: Small missile or rocket launch with a fizz and whoosh 6 (ZapSplat via Zapsplat)
+- cannon_slingshot: Slingshot shoot 1 (short twang-launch) (ZapSplat via Zapsplat)
+- cannon_blast_scifi: Science fiction weapon, large cannon or RPG launcher, shoot, blast (heavier option) (ZapSplat via Zapsplat)
+- whoosh_dash_1: Cartoon swipe, fast whoosh, good as a grab or dash sound 6 (launch / fly-by whoosh) (ZapSplat via Zapsplat)
+- whoosh_dash_2: Cartoon swipe, fast whoosh, good as a grab or dash sound 15 (ZapSplat via Zapsplat)
+- whoosh_rise: Vintage cartoon, zoom, rise, whoosh (rising launch) (PMSFX via Zapsplat)
+- spring_boing: Cartoon plucked twang, boing, spring, jump 2 (ZapSplat via Zapsplat)
+- spring_bounces: Cartoon spring, boing or jump, many fast bounces or hops (big launcher spring) (ZapSplat via Zapsplat)
+- spring_twang_hi: Cartoon ruler twang, short, higher pitched (Master of Dreams via Zapsplat)
+- switch_click: Plastic wall light switch click, flick 1 (ZapSplat via Zapsplat)
+- switch_click_bright: Electrical mains switch single click, bright (ZapSplat via Zapsplat)
+- switch_toggle: Radio switch, toggle, click 2 (ZapSplat via Zapsplat)
+- lever_click_1: Sci-fi, steampunk mechanism, one shot, click, button or lever 1 (PMSFX via Zapsplat)
+- lever_click_2: Sci-fi, steampunk mechanism, one shot, click, button or lever 2 (PMSFX via Zapsplat)
+- lever_gate: Metal farm gate lever lock movement 1 (big floor lever) (ZapSplat via Zapsplat)
+- lever_pull_long: Antique slot machine mechanical lever pull (Blastwave FX via Zapsplat)
+- key_pickup: Game tone, high pitched glassy bell chime, good for collect item or gain point 1 (ZapSplat via Zapsplat)
+- key_pickup_twinkle: Warm, magical soft digital twinkle tone, game, positive, award or achievement unlock 6 (ZapSplat via Zapsplat)
+- key_jingle_foley: Bunch of small keys pick up from wooden table 4 (layer under key_pickup) (ZapSplat via Zapsplat)
+- door_unlock: Game sound, magical door unlock, open 1 (ZapSplat via Zapsplat)
+- door_lock_click: Object, Item, Interaction, Menu, UI, Action, Open, Close, Door, Lock (short mechanical) (PMSFX via Zapsplat)
+- heart_pickup_1: Game, one up, extra life, positive tone 3 (ZapSplat via Zapsplat)
+- heart_pickup_2: Game, one up, extra life, positive tone 4 (ZapSplat via Zapsplat)
+- heart_pickup_warm: Game sound, happy bright and warm, positive tone, award, bonus etc 7 (ZapSplat via Zapsplat)
+- heart_pickup_mobile: Mobile game tone, warm, positive, bonus, award or level up sound 2 (ZapSplat via Zapsplat)
+- gain_life: Game tone, positive action, level up, gain life etc 2 (ZapSplat via Zapsplat)
+- power_up: Retro game tone, digital synth, fifths, ascend, power up, gain a life, level up 4 (ZapSplat via Zapsplat)
+- one_up: Classic game sound, one up, rising, positive. Version 5 (ZapSplat via Zapsplat)
+- one_up_tone: Game, one up, extra life, positive tone 5 (ZapSplat via Zapsplat)
+- star_jingle_1: Game sound, bright sparkle tone, positive 7 (ZapSplat via Zapsplat)
+- star_jingle_2: Game sound, bright sparkle tone, positive 18 (ZapSplat via Zapsplat)
+- star_wand_ping: Fairy magic wand ping 2 (ZapSplat via Zapsplat)
+- medal_glissando: Magical ascending glissando, warm harp and mallet, bright, ascending 4 (medal / rank reveal) (ZapSplat via Zapsplat)
+- medal_fairy_dust: Magical fairy dust sprinkle, twinkling, glistening, glittery bell tree style tone 4 (ZapSplat via Zapsplat)
+- medal_tropical: Game sound, tropical game, positive tone, award or bonus 2 (fits the island theme) (ZapSplat via Zapsplat)
+- bonus_warm_10: Game sound, happy bright and warm, positive tone, award, bonus etc 10 (ZapSplat via Zapsplat)
+- level_complete_kids: Kids game sound, fun and cheeky layered mallets, completed fanfare (ZapSplat via Zapsplat)
+- level_complete_trumpets: Game sound, trumpets fanfare leads into a harp glissando (ZapSplat via Zapsplat)
+- level_complete_regal: Game sound, regal trumpets fanfare (ZapSplat via Zapsplat)
+- level_complete_synth: Game sound, success, win fanfare, synth brass (ZapSplat via Zapsplat)
+- level_complete_dreamy: Game sound, win, complete, success or level up glissando, soft and dreamy (ZapSplat via Zapsplat)
+- level_complete_retro: Retro game tone, musical level complete 4 (ZapSplat via Zapsplat)
+- level_complete_synth_1: Game sound, tone, level complete or prompt, musical synth 1 (ZapSplat via Zapsplat)
+- level_complete_organ: Game tone, success fanfare, digital organ 1 (ZapSplat via Zapsplat)
+- level_end_keys: Game sound, end or complete, synth keys (ZapSplat via Zapsplat)
+- ui_click: UI button click, fast, wooden, organic 3 (ZapSplat via Zapsplat)
+- ui_click_digital: Game tone, collect item, digital click 1 (ZapSplat via Zapsplat)
+- ui_hover_1: Menu, select tone, good for game, app, software interface etc 33 (hover / focus tick) (ZapSplat via Zapsplat)
+- ui_hover_2: Menu, select tone, good for game, app, software interface etc 37 (ZapSplat via Zapsplat)
+- ui_select_1: Menu, select tone, good for game, app, software interface etc 39 (ZapSplat via Zapsplat)
+- ui_select_2: Menu, select tone, good for game, app, software interface etc 50 (ZapSplat via Zapsplat)
+- ui_select_scifi: Game tone, sci-fi, button, select or menu sound 4 (ZapSplat via Zapsplat)
+- ui_blip_8bit: Retro 8-bit arcade style game sound, action blip, collect item 2 (ZapSplat via Zapsplat)
+- ui_back: Multimedia, menu or window close tone (back / close / unpause) (SoundBits via Zapsplat)
+- ui_open: Object, Item, Interaction, Menu, UI, Action, Open, Close, Door, Lock (menu open) (PMSFX via Zapsplat)
+- ui_negative_blip: Game sound, 8-bit blip, collect item, negative (locked level / invalid) (ZapSplat via Zapsplat)
+- ui_negative_sparkle: Game sound, bright sparkle or twinkle tone, negative 2 (ZapSplat via Zapsplat)
+- pause_in: Cartoon swanee slide whistle, down fast 7 (playful "pause" blip) (ZapSplat via Zapsplat)
+- pause_out: Cartoon, slide whistle, pitch slides up with chorus 3 (resume) (ZapSplat via Zapsplat)
+- pause_music_loop: Game tone, music bed, loop, good for pause or waiting screen, soft, children's, warm chimes (ZapSplat via Zapsplat)
+- pause_music_calm: Game sound, pause music, soft, chiming, calm (ZapSplat via Zapsplat)
+- countdown_beeps: Game sound, car racing game, race start beeps 4 (3-2-1-go) (ZapSplat via Zapsplat)
+- countdown_retro: Retro game tone, car racing game start beeps 3 (ZapSplat via Zapsplat)
+- countdown_organ: Arcade racing game tone, organ, race start 4 (ZapSplat via Zapsplat)
+- countdown_blips: Game sound, car racing game, starter blips, beeps, version 2 (ZapSplat via Zapsplat)
+- timer_tick: Game sound, timer clicks, fast 1 (single tick, loop it per second) (ZapSplat via Zapsplat)
+- timer_ticks_fast: Game sound, mechanical timer fast clicks, countdown (ZapSplat via Zapsplat)
+- timer_quiz_20s: Musical game quiz timer, countdown, tense but bright 3 (time-attack last 20 s) (ZapSplat via Zapsplat)
+- countdown_console: Science fiction computer console, alarm beep, warning, countdown 2 (ZapSplat via Zapsplat)
+- boss_roar_1: Cartoon, funny monster growl 2 (ZapSplat via Zapsplat)
+- boss_roar_2: Cartoon, funny monster growl 6 (ZapSplat via Zapsplat)
+- boss_laugh_1: Cartoon monster, gremlin, troll or creature, crazy laugh 1 (ZapSplat via Zapsplat)
+- boss_laugh_2: Cartoon monster, gremlin, troll or creature, crazy laugh 2 (ZapSplat via Zapsplat)
+- boss_grunt: Cartoon monster, gremlin, troll or creature, grunting vocalisation 3 (boss hit) (ZapSplat via Zapsplat)
+- boss_roar_dino: Dinosaur call with forest reverb (bigger roar, still friendly) (ZapSplat via Zapsplat)
+- boss_growl_dino: Dinosaur growl, vocalisation 7 (ZapSplat via Zapsplat)
+- boss_growl_dog: Cartoon dog growl 3 (ZapSplat via Zapsplat)
+- boss_angry_squeak: Male cartoon character, high pitched voice, angry growl or grunt 3 (small angry boss) (ZapSplat via Zapsplat)
+- boss_ogre_growl: Monster, ogre, single growl 1 (scarier; audition for the age group) (ZapSplat via Zapsplat)
+- boss_footstep: Massive footstep, distant, dinosaur, monster or giant 3 (boss stomp) (ZapSplat via Zapsplat)
+- bubble_pop: Cartoon bubble pop (ZapSplat via Zapsplat)
+- bubble_pop_designed: Game sound, designed bubble pop 16 (ZapSplat via Zapsplat)
+- bubble_pop_wet: Cartoon wet pop, could be bubble pop or liquid 1 (ZapSplat via Zapsplat)
+- bubbles_pop_asc: Cartoon bubbles popping, ascending fast 4 (multi-pop, combo) (ZapSplat via Zapsplat)
+- uke_ascend: Cartoon ascend, climbing up steps, ukulele plucks (level-select cursor up / stairs) (ZapSplat via Zapsplat)
+- uke_descend: Cartoon descend, climbing down steps, ukulele plucks (ZapSplat via Zapsplat)
+- uke_impact: Cartoon impact, ukulele strings, slight ascend 2 (ZapSplat via Zapsplat)
+- vibes_descend: Cartoon descend, vibraphone, happy, fun, mysterious, musical 2 (lose/fail but cute) (ZapSplat via Zapsplat)
+- cartoon_rise_short: Cartoon accent, short rise, slide 2 (ZapSplat via Zapsplat)
+- music_island_loop: Happy – seamless music loop, acoustic, summer, tropical feel, positive, confident, fun, ukulele, bass and drums (Happy 004) — first island (Music For Video via Zapsplat)
+- music_uke_loop_lazy: Happy – seamless music loop, acoustic, lazy summer feel, positive, fun, ukulele, bass, drums and percussion (Happy 008) (Music For Video via Zapsplat)
+- music_uke_loop_cheeky: Happy – seamless music loop, acoustic, cheeky, positive, fun and plodding, acoustic guitars, ukulele, bass and drums (Happy 003) (Music For Video via Zapsplat)
+- music_uke_loop_mid: Happy – seamless music loop, acoustic, positive, confident, fun, medium paced, acoustic guitars, ukulele, bass and drums (Happy 006) (Music For Video via Zapsplat)
+- music_uke_loop_fills: Happy – seamless music loop, acoustic, positive, confident, fun, acoustic guitars, ukulele bass, drums and electric drum fills (Happy 005) (Music For Video via Zapsplat)
+- music_menu_cheeky_monkey: "Cheeky Monkey" – playful, cheeky and simple music loop, great for game or app (title / level select) (ZapSplat via Zapsplat)
+- music_kids_round: Round and Round We Go – fun children's music with a playful, fun feel, piano rhythm, drums, bass and glockenspiel melody (ZapSplat via Zapsplat)
+- music_kids_butterfly: Butterfly – fun children's music with a playful and inquisitive feel with piano, marimba and acoustic bass (ZapSplat via Zapsplat)
+- music_kids_mr_jelly: Mr Jelly – fun, energetic and cheeky children's music with steel guitar chords and oboe and bassoon melody (ZapSplat via Zapsplat)
+- music_kids_daft_cat: Daft Cat – cheeky, fun short music ideal for cute kittens or kids at play (ZapSplat via Zapsplat)
+- music_kids_playing: Playing – children's music track, simple and playful piano with synth bass and beats (darrenifyouask via Zapsplat)
+- music_tropical_steel: Game music – tropical game, fun, light hearted, steel drums, Caribbean, percussive (beach / tropical island) (ZapSplat via Zapsplat)
+- music_tropical_banana: Banana Tree – fun, light-hearted acoustic guitar melody with light percussion and piano rhythm with a tropical feel (ZapSplat via Zapsplat)
+- music_tropical_showtell: Show And Tell – playful and fun children's music with a tropical feel (Audio Hero via Zapsplat)
+- music_tropical_dawn: Tropical Dawn – a fresh ambient and chilled track with synthesised warm chords and synth melody, percussion and drums (sky islands / calm) (ZapSplat via Zapsplat)
+- music_overworld_joy: Fields of Joy – an upbeat, happy and positive track full of optimism, acoustic guitar, strings, drums, glockenspiel (closest "adventure" feel, world map) (Dave Miles via Zapsplat)
+- music_adventure_journey: Astral Journey – synthesiser bass, synth arpeggio, strings and high pitched melody deliver a dynamic theme (adventure / sky) (Audio Hero via Zapsplat)
+- music_boss_epic_loop: Epic – seamless music loop, fast, driving, dramatic orchestral driven track with drums 7 (boss / chase, seamless) (Music For Video via Zapsplat)
+- music_boss_epic_loop_2: Epic – seamless music loop 4 (Music For Video via Zapsplat)
+- music_space_race: Astro Race – mid tempo electro music with a spacey, fun vibe (sky / time-attack) (ZapSplat via Zapsplat)
+- music_menu_easy_cheesy: Easy Cheesy – fun, up-tempo funky retro action arcade game music, great for menu or pause sections (ZapSplat via Zapsplat)
+- music_winter_dance: Winter Dance – enchanting orchestral piece, pizzicato plucks, staccato strings and harp, cold winter's day with a happy, magical feel (ice island) (ZapSplat via Zapsplat)
+- music_winter_rabbit: Rabbit's First Snow – an orchestral piece set in winter with a slightly cautious yet carefree tone (ice island alt.) (ZapSplat via Zapsplat)
+- music_spooky_staircase: Haunted Staircase – a dark and creepy subtle track with piano stabs and a descending eerie melody (mildest "spooky", cave/temple) (ZapSplat via Zapsplat)
+- music_spooky_trick: Trick or Treat – building horror music with piano riff, dark synthesized elements and orchestral crescendo (probably too scary; audition) (ZapSplat via Zapsplat)
+- music_spooky_stinger: Creepy Creep – tension driven, dark and eerie, horror musical bumper, stinger, intro/outro (DeepTheme Audio via Zapsplat)
+- music_mystery_bed: Game music – repetitive dark mysterious music bed with an airy, lightly tense style (temple / cave underscore) (ZapSplat via Zapsplat)
+- music_calm_night_1: Game music – children's game, calm, soft and caring arpeggios, sweet and cute, nighttime (night level / results) (ZapSplat via Zapsplat)
+- music_calm_plucked: Game music – children's game, calm, soft slow arpeggios with a plucked twinkling feel (crystal cave) (ZapSplat via Zapsplat)
+- music_calm_guitar: Game music – children's game, soft, warm and sincere, picked guitar, warm arpeggios, glockenspiel melody (ZapSplat via Zapsplat)
+- music_kids_warm_pads: Game music, kids game, soft, warm and slow with piano, warm pads and vocal ah stabs (ZapSplat via Zapsplat)
+- music_chiptune_happy: CRT Skies – royalty free music loop, 8-bit chiptune, simple, happy (bonus / retro level) (Kulluh via Zapsplat)
+- music_chiptune_stardust: Stardust Render – royalty free music loop, simple fun 8-bit chiptune (Kulluh via Zapsplat)
+- music_chiptune_glimmer: Glimmer Moon – royalty free music loop, 8-bit chiptune, simple, game music (Kulluh via Zapsplat)
+- music_chiptune_afterglow: 8-Bit Afterglow – royalty free music loop, simple 8-bit chiptune, basic, game (Kulluh via Zapsplat)
+- music_merry_go_round: Merry Go Round – merry go round style children's music with a bright twinkly melody (Audio Hero via Zapsplat)
+- **Cannon 01** (cannon_01) — Poly Haven, CC0, by Yann Kervran, James Ray Cock (https://polyhaven.com/a/cannon_01); simplified ratio 0.12, textures ≤512px
+- **Treasure Chest** (treasure_chest) — Poly Haven, CC0, by Rico Cilliers (https://polyhaven.com/a/treasure_chest); simplified ratio 0.12, textures ≤512px
+- **Gothic Statue** (gothic_statue) — Poly Haven, CC0, by Benny Weimer (https://polyhaven.com/a/gothic_statue); simplified ratio 0.12, textures ≤512px
+- **Lion Head** (lion_head) — Poly Haven, CC0, by Tina (https://polyhaven.com/a/lion_head); simplified ratio 0.12, textures ≤512px
+- **Dead Tree Trunk 02** (dead_tree_trunk_02) — Poly Haven, CC0, by Jenelle van Heerden, Rico Cilliers (https://polyhaven.com/a/dead_tree_trunk_02); simplified ratio 0.12, textures ≤512px
+- **Ocean Buoy** (ocean_buoy) — Poly Haven, CC0, by Mateusz Sadek (https://polyhaven.com/a/ocean_buoy); simplified ratio 0.5, textures ≤512px
+- **Large Castle Door** (large_castle_door) — Poly Haven, CC0, by Tina (https://polyhaven.com/a/large_castle_door); simplified ratio 0.5, textures ≤512px
+- **Bronze Whale Statue** (bronze_whale_statue) — Poly Haven, CC0, by Tina (https://polyhaven.com/a/bronze_whale_statue); simplified ratio 0.5, textures ≤512px
+- **Wooden Lantern 01** (wooden_lantern_01) — Poly Haven, CC0, by James Ray Cock (https://polyhaven.com/a/wooden_lantern_01); simplified ratio 0.5, textures ≤512px
+- **Fern 02** (fern_02) — Poly Haven, CC0, by Rob Tuytel, Rico Cilliers (https://polyhaven.com/a/fern_02); simplified ratio 0.5, textures ≤512px
+- **Moon Rock 02** (moon_rock_02) — Poly Haven, CC0, by Rico Cilliers, Greg Zaal, Jenelle van Heerden (https://polyhaven.com/a/moon_rock_02); simplified ratio 0.5, textures ≤512px
+- **Moon Rock 04** (moon_rock_04) — Poly Haven, CC0, by Greg Zaal, Rico Cilliers, Jenelle van Heerden (https://polyhaven.com/a/moon_rock_04); simplified ratio 0.5, textures ≤512px
+- **Moon Rock 06** (moon_rock_06) — Poly Haven, CC0, by Greg Zaal, Jenelle van Heerden, Rico Cilliers (https://polyhaven.com/a/moon_rock_06); simplified ratio 0.5, textures ≤512px
+
+## 3D models (3dassets.dev, CC0)
+- **cone_f.glb** — Cone Flank Module, Shallow (Volcano and Lava Fields) by 3dassets, CC0 1.0 Universal, https://3dassets.dev/assets/volcano-and-lava-fields-volcano-and-lava-fields-cone-f-56e7389b
+- **crater.glb** — Crater Rim Section (Volcano and Lava Fields) by 3dassets, CC0 1.0 Universal, https://3dassets.dev/assets/volcano-and-lava-fields-volcano-and-lava-fields-crater-0f7b0780
+- **lava_l.glb** — Lava Lake Surface Plate (Volcano and Lava Fields) by 3dassets, CC0 1.0 Universal, https://3dassets.dev/assets/volcano-and-lava-fields-volcano-and-lava-fields-lava-l-5208568b
+- **hexago.glb** — Hexagonal Basalt Pavement Module (Volcano and Lava Fields) by 3dassets, CC0 1.0 Universal, https://3dassets.dev/assets/volcano-and-lava-fields-volcano-and-lava-fields-hexago-d38b3210
+- **spatte.glb** — Spatter Cone (Volcano and Lava Fields) by 3dassets, CC0 1.0 Universal, https://3dassets.dev/assets/volcano-and-lava-fields-volcano-and-lava-fields-spatte-c3e93264
+- **geyser.glb** — Geyser Cone (Volcano and Lava Fields) by 3dassets, CC0 1.0 Universal, https://3dassets.dev/assets/volcano-and-lava-fields-volcano-and-lava-fields-geyser-e34fc68c
+- **obsidi.glb** — Obsidian Flow Slab (Volcano and Lava Fields) by 3dassets, CC0 1.0 Universal, https://3dassets.dev/assets/volcano-and-lava-fields-volcano-and-lava-fields-obsidi-046ce20c
+- **rope_b.glb** — Rope Bridge Over A Fissure (Volcano and Lava Fields) by 3dassets, CC0 1.0 Universal, https://3dassets.dev/assets/volcano-and-lava-fields-volcano-and-lava-fields-rope-b-a5885546
+
+## 3D models (3dassets.dev, CC0)
+- **summit_shrine.glb** — Summit Shrine (Jungle Temple and Stone City) by 3dassets, CC0 1.0 Universal, https://3dassets.dev/assets/jungle-temple-and-stone-city-summit-shrine-f82323df
+- **serpent_balustrade_head.glb** — Serpent Balustrade Head (Jungle Temple and Stone City) by 3dassets, CC0 1.0 Universal, https://3dassets.dev/assets/jungle-temple-and-stone-city-serpent-balustrade-head-17a1d5ba
+- **ball_court_stone_ring.glb** — Ball Court Stone Ring (Jungle Temple and Stone City) by 3dassets, CC0 1.0 Universal, https://3dassets.dev/assets/jungle-temple-and-stone-city-ball-court-stone-ring-89c49aa3
