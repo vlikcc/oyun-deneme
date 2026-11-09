@@ -211,6 +211,15 @@ async function runProfile(p) {
     res.timings.menu = Date.now() - t0;
     res.bytesAtMenu = reqs.reduce((s, r) => s + r.bytes, 0);
     res.env = await page.evaluate(probeEnv);
+    // GDD §5.1: a phone held in portrait gets a full-screen "Telefonu yan çevir" prompt that blocks the menu by design.
+    // Record it, then turn the phone to landscape (as a player would) and run the rest of the flow there.
+    { const v = page.viewportSize();
+      if (touch && v.height > v.width && Math.min(v.width, v.height) < 600) {
+        res.checks.rotatePrompt = await page.evaluate(() => { const r = document.querySelector('#rotate'); return !!r && !r.hidden && r.getBoundingClientRect().height > innerHeight * 0.5; });
+        if (!res.checks.rotatePrompt) warn('portrait phone: no "Telefonu yan çevir" rotate prompt (GDD §5.1)');
+        await page.setViewportSize({ width: v.height, height: v.width }); await sleep(700);
+        await page.locator('#startBtn').waitFor({ state: 'visible', timeout: bigTimeout });
+      } }
     if (!res.env.glVersion) fail('no WebGL context');
     if (p.kind === 'mobile') {
       const miss = [!res.env.manifest && 'link[rel=manifest]', !res.env.themeColor && 'meta[name=theme-color]', !res.env.appleTouchIcon && 'link[rel=apple-touch-icon]'].filter(Boolean);

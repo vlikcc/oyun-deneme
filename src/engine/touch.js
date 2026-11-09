@@ -28,7 +28,7 @@ const listen = (target, ev, fn, o) => { target.addEventListener(ev, fn, o); clea
 
 /** wantTouchUi() — the layer is shown for coarse pointers or ?touch=1 (a touch laptop with a mouse keeps the desktop UI
  *  until its first real touch, see onFirstTouch). */
-function wantTouchUi() { return params.get('touch') === '1' || matchMedia('(pointer: coarse)').matches; }
+function wantTouchUi() { return params.get('touch') === '1' || matchMedia('(pointer: coarse)').matches || isTouchDevice; }   // isTouchDevice: phones/tablets incl. iPadOS with a keyboard/trackpad (pointer: fine)
 
 /** syncSettings(force) — reads save.settings.simpleTouch / leftHanded (init, entering 'play', and every merge() while no
  *  finger is down — so a change in Ayarlar applies at once without remapping a finger mid-gesture). */
@@ -141,7 +141,8 @@ function onFirstTouch(e) {
 }
 
 // ---------------------------------------------------------------- portrait prompt
-const portraitMq = () => matchMedia('(orientation: portrait)');
+// phones only (narrow side < 600 CSS px): tablets such as iPad play fine in portrait
+const portraitMq = () => matchMedia('(orientation: portrait) and (max-width: 599px)');
 function updateRotate() {
   if (!rotateEl) return;
   const show = document.body.classList.contains('touch') && portraitMq().matches;

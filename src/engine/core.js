@@ -6,7 +6,7 @@ import * as assets from './assets.js';
 export const params = new URLSearchParams(location.search);
 // Touch-capable Windows/X11 laptops are not touch devices; iPadOS 13+ Safari sends a desktop 'Macintosh' UA but reports
 // maxTouchPoints 5 (a real Mac reports 0), so a Macintosh UA with touch points is an iPad.
-const isIPadOS = /Macintosh/.test(navigator.userAgent) && navigator.maxTouchPoints > 1;
+const isIPadOS = /Macintosh/.test(navigator.userAgent) && (navigator.maxTouchPoints > 1 || 'ontouchstart' in window);   // desktop Safari/Chrome on a Mac have neither
 export const isTouchDevice = (navigator.maxTouchPoints > 0 || 'ontouchstart' in window) && (isIPadOS || !/Macintosh|Windows NT|X11/.test(navigator.userAgent));
 export const flags = {
   test: params.get('test') === '1',

@@ -57,7 +57,7 @@ try {
   ({ page, errs: errs0 } = await open(url.toString()));
   cdp = await page.createCDPSession();
   await page.evaluate(async () => {
-    const [input, touch] = await Promise.all([import('/src/engine/input.js'), import('/src/engine/touch.js')]);
+    const [input, touch] = await Promise.all([import('./src/engine/input.js'), import('./src/engine/touch.js')]);
     const g = window.__game;
     window.__tc = {
       input, touch,
