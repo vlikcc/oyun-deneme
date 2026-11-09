@@ -1,0 +1,21 @@
+{
+  "name": "Pıtır'ın Kristal Adaları",
+  "short_name": "Pıtır",
+  "description": "Pıtır ile adalardaki Güneş Kristallerini topla — 3B platform oyunu.",
+  "lang": "tr",
+  "dir": "ltr",
+  "start_url": "../",
+  "scope": "../",
+  "display": "fullscreen",
+  "display_override": ["fullscreen", "standalone"],
+  "orientation": "landscape",
+  "background_color": "#8fd3ff",
+  "theme_color": "#8fd3ff",
+  "categories": ["games", "kids", "entertainment"],
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" },
+    { "src": "icons/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}

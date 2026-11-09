@@ -1,4 +1,5 @@
-// Level 1 — the original island, rebuilt 1:1 with the L API (same coordinates, same seeded placement order).
+// Level 1 — the original island, rebuilt 1:1 with the L API (same coordinates, same seeded placement order), polished per
+// GDD §2.4: oak/palm GLB trees, grass + bushes, four tutorial signposts, a heart, a secret cove and the tower vista.
 const THEME = {
   hdri: 'kloofendal_48d_partly_cloudy_puresky',      // → assets/hdri/sky_2k.hdr (alias table in assets.js)
   hdriRotation: 0,
@@ -8,13 +9,13 @@ const THEME = {
   fog: { color: 0xd6ecff, near: 90, far: 230 },
   water: { color: 0x1c8fd1, sunColor: 0xfff1d6, level: -1.2, distortion: 2.2 },
   materials: {
-    ground: { tex: 'aerial_grass_rock', tint: 0xe4ffc4, scale: 5, normalScale: 0.7, envMapIntensity: 1.2 },
+    ground: { tex: 'aerial_grass_rock', tint: 0xe4ffc4, scale: 5, normalScale: 0.7, envMapIntensity: 1.2, steps: 'grass' },
     cliff: { tex: 'rock_face', tint: 0xe8ddd0, scale: 6 },
     stone: { tex: 'stone_tiles_02', tint: 0xfff2e0, scale: 3 },
     accent: { tex: 'coast_sand_01', tint: 0xffefc8, scale: 5, normalScale: 0.6 },
   },
-  ambience: ['amb_waves', 'amb_birds'],
-  music: null,
+  ambience: ['amb_waves', 'amb_birds'],   // GDD §6.1
+  music: 'music_island_loop',
   particles: 'none',
   clouds: true,
 };
@@ -68,17 +69,24 @@ export default {
     L.bouncePad(14, 0.45, -6, 1.1, 27);
 
     // Decorations: trees (trunks collide), flowers, rocks, clouds — same seeded order and positions as the original
-    // build (L.tree consumes two rnd() per tree like the original addTree). The original's procedural blob trees are
-    // GLB oaks/pines (4–6 m, instanced) with the original trunk collider (r = 0.45·s, y 0 … 2.2·s).
+    // build (L.tree consumes two rnd() per tree like the original addTree, whatever the kind). The original's procedural
+    // blob trees are GLB oaks inland and palms for the 6 placements nearest the beach ring (GDD §2.4), 4–6 m, instanced,
+    // with the original trunk collider (r = 0.45·s, y 0 … 2.2·s). BEACH_PALMS = placement indices of the 6 largest
+    // radii for seed 7 (26.9, 26.9, 26.7, 25.6, 25.6, 25.6 m; the next oak is at 25.57 m) — checked below.
     const keepClear = [[0, 22, 6], [0, 14, 5], [0, 7, 5], [4, 26, 5], [-7, 23, 3], [-17.5, 16, 4], [6, -14, 9], [14, -6, 3], [0, 0, 0]];
+    const BEACH_PALMS = new Set([3, 8, 11, 12, 19, 21]);
+    const treeR = [];
     let placed = 0;
     for (let tries = 0; tries < 400 && placed < 22; tries++) {
       const a = L.rnd() * Math.PI * 2, r = 9 + L.rnd() * 18;
       const x = Math.cos(a) * r, z = Math.sin(a) * r;
       if (L.nearCollider(x, z, 2.5, keepClear)) continue;
       const s = 0.8 + L.rnd() * 0.6;
-      L.tree(x, z, { kind: placed % 4 === 3 ? 'pine' : 'oak', scale: s, height: 4 + ((s - 0.8) / 0.6) * 2, r: 0.45 * s, y0: -1, y1: 2.2 * s }); placed++;
+      L.tree(x, z, { kind: BEACH_PALMS.has(placed) ? 'palm' : 'oak', scale: s, height: 4 + ((s - 0.8) / 0.6) * 2, r: 0.45 * s, y0: -1, y1: 2.2 * s });
+      treeR.push(r); placed++;
     }
+    { const outer = treeR.map((r, i) => [r, i]).sort((p, q) => q[0] - p[0]).slice(0, BEACH_PALMS.size);
+      if (outer.some(([, i]) => !BEACH_PALMS.has(i))) console.warn('[kristal] BEACH_PALMS no longer the outermost trees (seed/placement changed)'); }
     L.tree(53, 12.5, { kind: 'palm', scale: 0.8, y: 1, height: 4.4, r: 0.36, y0: -1, y1: 1.76 });    // islet B (top 1.0)
     L.tree(31, 41, { kind: 'palm', scale: 0.7, y: 2.5, height: 4.2, r: 0.315, y0: -1, y1: 1.54 });   // islet C (top 2.5)
     const FLOWER_COLORS = [0xff6f91, 0xffe066, 0xffffff, 0xa78bfa];
@@ -94,6 +102,33 @@ export default {
     }
     L.clouds(14);
 
+    // Polish (GDD §2.4) — everything below comes after the original seeded decoration, so the rnd() stream and the
+    // collider set the trees were placed against are unchanged.
+    L.scatter('grass', { center: [0, 0], rMin: 3, rMax: 27, count: 40, keepClear });
+    L.scatter('bush_round', { center: [0, 0], rMin: 8, rMax: 26, count: 10, keepClear, scale: [0.9, 1.4], margin: 1.2 });
+
+    // Secret cove on the west beach (GDD §2.4): a low sand bar off the south-west shore, tucked against the foot of the
+    // cliff, and a little sand cove centred on the secret behind two leaning palms. Tops -0.3 (a 0.3 m step down, < 0.4
+    // step-up back), above the water death line (-1.0). A 5-coin trail leads from the meadow onto the bar. L.secret's
+    // own 3 × 3 box is easy to walk past, so the whole cove (6 × 6) reveals it too.
+    L.cyl(-24.5, -0.3, 23, 5, 2.2, { mat: 'accent', seg: 32 });
+    L.cyl(-31, -0.3, 22.5, 3.6, 2.2, { mat: 'accent', seg: 28 });
+    L.prop('palm_leaning', -28.2, -0.3, 25.2, { scale: 1.05, rotY: 2.2, collide: 'cyl', r: 0.32, h: 3 });
+    L.prop('palm_leaning', -28.6, -0.3, 21.4, { scale: 0.95, rotY: 4.1, collide: 'cyl', r: 0.32, h: 3 });
+    const cove = L.secret(-31, -0.3, 22, { coins: 10 });
+    L.trigger({ x: -31, y: -0.3, z: 22.4, w: 6, h: 2.5, d: 6 }, { once: true, onEnter: () => cove.reveal() });
+
+    // Tutorial signposts (GDD §4.11). Two are nudged ≤ 2.5 m off the GDD spot so the post does not stand in the bounce
+    // pad (14, 0, -6) or through the stair-1 coin (-10, 2, 10).
+    L.sign(0, 0, 19, 'Zıpla!\n(A — basılı tut:\ndaha yükseğe)');
+    L.sign(-8.7, 1, 11.3, 'Koşarken üst üste\n3 kez zıpla!', { rotY: 0.4 });
+    L.sign(16, 0, -4.6, 'Havada B:\nyere çakıl!', { rotY: -0.8 });
+    L.sign(-17.5, 0, 18, 'Zıplama yastığı:\nüstüne bas!', { rotY: 0.8 });
+
+    // Heart (GDD §3.10) and the Kartpostal on the tower top (walkable top 14; the crystal floats at 15.6).
+    L.heart(18, 1, 8);
+    L.vista(6, 14, -14, { title: 'Ada Panoraması', yaw: 2.4, pitch: 0.35, dist: 22 });
+
     // Coins
     L.coinLine([0, 1, 17], [0, 1, 9], 5);
     L.coinRing(0, 1, 0, 4, 8);
@@ -106,7 +141,8 @@ export default {
     L.coinLine([-17.5, 4, 16], [-17.5, 10, 16], 4);
     for (let i = 0; i < 10; i++) { const a = i * 0.72 + 0.2; L.coin(6 + Math.cos(a) * 5.8, 2.4 + i * 1.32, -14 + Math.sin(a) * 5.8); }
     L.coinRing(-12, 1, -14, 2.5, 6);
-    L.coinLine([18, 1, 8], [24, 1, 0], 4);
+    L.coinLine([19.5, 1, 6], [24, 1, 0], 4);   // starts past the heart at (18, 1, 8)
+    L.coinLine([-17.5, 1, 24], [-26, 0.7, 24.4], 5);   // trail to the secret cove (65 + 5 + 10 secret = 80)
 
     // Sun crystals
     L.crystal(-8, 9.2, -6.5, 0xff6f91);
@@ -155,10 +191,18 @@ export default {
     { at: [29.5, 2.5, 35.5], via: 'jump', note: 'island C south-west edge' },
     { at: [27, 2.0, 33], via: 'jump', note: 'way back 1' }, { at: [22.5, 1.4, 29], via: 'jump' }, { at: [18.5, 0.8, 25.5], via: 'jump' },
     { at: [15, 0, 21], via: 'jump', note: 'back on the main island' },
+    { at: [18, 0, 8], via: 'walk', note: 'heart (18, 1, 8)' },
     { at: [-17.5, 0.45, 16], via: 'walk', note: 'bounce pad' }, { at: [-24.75, 10, 16], via: 'bounce', note: 'cliff, crystal 4' },
-    { at: [6 + Math.cos(0.2) * 5.8, 1.4, -14 + Math.sin(0.2) * 5.8], via: 'walk', note: 'tower spiral start' },
+    { at: [-17, 0, 23.5], via: 'walk', note: 'drop off the cliff, south-west meadow' },
+    { at: [-23, -0.3, 24.5], via: 'walk', note: 'sand bar (coin trail)' },
+    { at: [-28, -0.3, 23.5], via: 'walk', note: 'between the leaning palms' },
+    { at: [-31, -0.3, 22], via: 'walk', note: 'secret cove (10 coins)' },
+    { at: [-21, -0.3, 24], via: 'walk', note: 'back over the sand bar' },
+    { at: [-17, 0, 23.5], via: 'walk', note: 'step up onto the meadow' },
+    { at: [11.5, 0, -9.5], via: 'walk', note: 'foot of the tower' },
+    { at: [6 + Math.cos(0.2) * 5.8, 1.4, -14 + Math.sin(0.2) * 5.8], via: 'jump', note: 'tower spiral start' },
     { at: [6 + Math.cos(9 * 0.72 + 0.2) * 5.8, 1.4 + 9 * 1.32, -14 + Math.sin(9 * 0.72 + 0.2) * 5.8], via: 'climb', note: 'spiral top' },
-    { at: [6, 14, -14], via: 'jump', note: 'tower top, crystal 5' },
+    { at: [6, 14, -14], via: 'jump', note: 'tower top, crystal 5 + vista' },
     { at: [-7, 0, 23], via: 'walk', note: 'portal' },
   ],
 };

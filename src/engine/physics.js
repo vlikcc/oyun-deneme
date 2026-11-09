@@ -2,7 +2,7 @@
 // Feel constants are the originals — level authors rely on §2. physics imports only fx/audio/bus (never world/ui).
 import * as THREE from 'three';
 import { burst, hitStop, addTrauma } from './fx.js';
-import { sfx } from './audio.js';
+import { sfx, play as playSfx } from './audio.js';
 import { emit } from './bus.js';
 
 // ---------------------------------------------------------------- constants (do not change: §2 reach rules)
@@ -34,7 +34,8 @@ export const colliders = [];       // {type:'box', min, max} | {type:'cyl', x, z
 export const solidMeshes = [];     // meshes the camera & blob-shadow raycast against
 export const movers = [];          // box colliders animated by world.step (carry the player through .delta)
 
-/** Shared simulation flags: main sets `playing`; world sets `waterY` / `waterKind` ('water'|'lava') / `killY` from the theme. */
+/** Shared simulation flags: main sets `playing`; world.load sets `waterY` / `waterKind` ('water'|'lava'|'cloud'|'void') / `killY`
+ *  from theme.water (waterY = deathY ?? -1) or theme.fall (waterY = killY = fall.y, waterKind = fall.kind ?? 'cloud'). */
 export const sim = { playing: false, waterY: WATER_Y, waterKind: 'water', killY: -60, test: false, time: 0 };
 
 // ---------------------------------------------------------------- player state
@@ -45,6 +46,7 @@ export const player = {
   jumpChain: 0, chainTimer: 0, cutAllowed: false, landSpeed: 0,
   pounding: false, poundHold: 0, facing: 0, flip: 0,
   hearts: 3, maxHearts: 3, invuln: 0, coins: 0, crystals: 0,
+  fallCap: MAX_FALL,                    // E2: terminal fall speed (cannon flights raise it to 120; reset/respawn restore MAX_FALL)
   scale: new THREE.Vector3(1, 1, 1), scaleVel: new THREE.Vector3(), runPhase: 0,
   groundY: -99,
   flying: false,                        // ballistic flight (cannon/launch): no air control, no jump cut, plain gravity; cleared on landing
@@ -53,6 +55,16 @@ export const player = {
   checkpoint: new THREE.Vector3(0, 0, 0), spawn: new THREE.Vector3(0, 0.1, 22), spawnFacing: Math.PI,
   leaves: null, scarfTail: null,
 };
+// ---------------------------------------------------------------- Yardım Modu (E4, GDD §4.7)
+// Live multipliers read by the engine and the mechanics. setAssist(on) fills the table from the presets; mechanics read
+// e.g. `physics.assist.crumble` at use time. hearts applies on reset()/faint() (player.maxHearts), the rest immediately.
+// Not in the E4 list but in GDD §4.7: `eruption` (lava rise speed ×0.65); boss.js reads `assist.on` (2 HP, slower ring).
+export const ASSIST_OFF = Object.freeze({ on: false, coyote: COYOTE, enemySpeed: 1, crumble: 1, wind: 1, timed: 1, coinLoss: true, hearts: 3, eruption: 1 });
+export const ASSIST_ON = Object.freeze({ on: true, coyote: 0.18, enemySpeed: 0.75, crumble: 1.5, wind: 0.7, timed: 1.5, coinLoss: false, hearts: 5, eruption: 0.65 });
+export const assist = { ...ASSIST_OFF };
+/** setAssist(on) — switch the assist table between ASSIST_OFF / ASSIST_ON (main.js applies settings.assist at level load). */
+export function setAssist(on) { Object.assign(assist, on ? ASSIST_ON : ASSIST_OFF); return assist; }
+
 export let lastInput = { ix: 0, iy: 0, look: 0, jump: false, jumpHeld: false, pound: false, yaw: 0 };
 
 export function squash(xz, y) { player.scale.set(xz, y, xz); player.scaleVel.set(0, 0, 0); }
@@ -85,6 +97,34 @@ export function launch(vel, { flying = false } = {}) {
 }
 
 const isSolid = (c) => !c.noSolid && c.solid !== false;
+/**
+ * E1 setSolid(c, on): toggle a collider's solidity (crumble, doors, risers, hidden platforms). Off: `noSolid = true,
+ * solid = false`, its mesh leaves `solidMeshes` (camera pull-in + blob shadow + groundBelow ignore it) and the player
+ * standing on it starts falling (onLeave fires). On: back into `solidMeshes` (unless it was registered with
+ * raycast:false, e.g. tree trunks) and, if the player's capsule overlaps it with the feet below its top, the player is
+ * lifted onto the top (`pos.y = top`). Idempotent.
+ */
+export function setSolid(c, on) {
+  if (!c) return c;
+  if (!on) {
+    c.noSolid = true; c.solid = false;
+    for (let k = solidMeshes.length - 1; k >= 0; k--) if (solidMeshes[k] === c.mesh) solidMeshes.splice(k, 1);
+    if (player.ground === c) { player.grounded = false; setGround(null); }
+    return c;
+  }
+  c.noSolid = false; c.solid = true;
+  if (c.mesh && c.raycast !== false && !solidMeshes.includes(c.mesh)) solidMeshes.push(c.mesh);
+  const p = player.pos, R = player.R;
+  let inside, top, bottom;
+  if (c.type === 'box') {
+    const cx = clamp(p.x, c.min.x, c.max.x), cz = clamp(p.z, c.min.z, c.max.z);
+    inside = (p.x - cx) ** 2 + (p.z - cz) ** 2 < R * R; top = c.max.y; bottom = c.min.y;
+  } else { inside = Math.hypot(p.x - c.x, p.z - c.z) < c.r + R; top = c.y1; bottom = c.y0; }
+  if (inside && p.y < top && p.y + player.H > bottom) {
+    p.y = top; player.prevY = top; if (player.vel.y < 0) player.vel.y = 0;
+  }
+  return c;
+}
 /** probeMeshes(extra?) → the raycast list for the camera / blob shadow / test ground probe: solidMeshes minus the meshes
  *  whose collider (`mesh.userData.collider`, set by world.registerCollider) is currently non-solid (fading platforms). */
 export function probeMeshes(extra = null) {
@@ -192,7 +232,7 @@ export function stepPlayer(dt, input) {
   if (p.grounded && p.ground && p.ground.delta) p.pos.add(p.ground.delta);
 
   // timers
-  if (p.grounded) p.coyote = COYOTE; else p.coyote -= dt;
+  if (p.grounded) p.coyote = assist.coyote; else p.coyote -= dt;
   p.buffer -= dt; p.chainTimer -= dt; p.invuln -= dt;
   const locked = p.controlLock > 0;
   if (locked) p.controlLock -= dt;
@@ -218,7 +258,7 @@ export function stepPlayer(dt, input) {
     else { v.x = 0; v.z = 0; v.y = -POUND_SPEED; }
   } else if (p.flying) {
     // ballistic: keep velocity, plain gravity, no control until landing (a jump press is still buffered for the landing)
-    v.y = Math.max(v.y - GRAV * dt, -MAX_FALL);
+    v.y = Math.max(v.y - GRAV * dt, -p.fallCap);
   } else {
     if (!locked) {
       // horizontal accel
@@ -243,7 +283,7 @@ export function stepPlayer(dt, input) {
     // gravity: heavier fall, slight apex hang while holding jump
     let g = v.y < 0 ? GRAV * FALL_MULT : GRAV;
     if (input.jumpHeld && !locked && Math.abs(v.y) < 2.5 && !p.grounded) g *= 0.6;
-    v.y = Math.max(v.y - g * dt, -MAX_FALL);
+    v.y = Math.max(v.y - g * dt, -p.fallCap);
   }
 
   // integrate & collide
@@ -266,9 +306,9 @@ export function stepPlayer(dt, input) {
     p.facing += diff * (1 - Math.exp(-14 * dt));
   }
 
-  // water / lava / void
+  // water / lava sea / cloud sea / void (E3: fellInWater branches on sim.waterKind)
   if (sim.playing) {
-    if (sim.waterY != null && p.pos.y < sim.waterY) { if (sim.waterKind === 'lava') { if (!hazard('lava')) respawn(); } else fellInWater(); }
+    if (sim.waterY != null && p.pos.y < sim.waterY) fellInWater();
     else if (p.pos.y < sim.killY) fellInVoid();
   }
 }
@@ -296,17 +336,36 @@ export function hurt(from) {
 }
 export function faint() {
   emit('toast', 'Bayıldın! Son bayrağa dönülüyor…', 2);
-  player.coins = Math.max(0, player.coins - 10);
+  if (assist.coinLoss) player.coins = Math.max(0, player.coins - 10);   // Yardım Modu: no coin loss
+  player.maxHearts = assist.hearts;
   player.hearts = player.maxHearts; emit('hud'); emit('faint');
   respawn();
 }
 export function respawn() {
   player.pos.copy(player.checkpoint).add(new THREE.Vector3(1.2, 0.2, 1.2));
   player.vel.set(0, 0, 0); player.extVel.set(0, 0, 0); player.pounding = false; player.jumpChain = 0; player.invuln = 1.2; player.controlLock = 0; player.flying = false;
+  player.fallCap = MAX_FALL;
   player.grounded = false; setGround(null);
   emit('respawn', player.pos.clone());
 }
+/**
+ * fellInWater() — below sim.waterY. E3 branches on sim.waterKind: 'lava' → hazard('lava') with `lava_bubble_pop` and the
+ * toast "Cız! Lav!" (just-respawned/invulnerable → plain respawn); 'cloud' → "Bulutlara düştün!" + `whoosh_dash_1`, −1 heart,
+ * respawn; 'void' → fellInVoid(); anything else → the water splash ("Şapırt!").
+ */
 export function fellInWater() {
+  const kind = sim.waterKind || 'water';
+  if (kind === 'lava') { if (!hazard('lava', player.pos, { toast: 'Cız! Lav!', sfxKey: 'lava_bubble_pop' })) respawn(); return; }
+  if (kind === 'void') { fellInVoid(); return; }
+  if (kind === 'cloud') {
+    playSfx('whoosh_dash_1');
+    burst(new THREE.Vector3(player.pos.x, player.pos.y + 0.5, player.pos.z), 16, 0xffffff, { speed: 4, up: 3, life: 0.7, grav: 2, size: 1.6 });
+    player.hearts--; emit('hud'); emit('water', 'cloud');
+    if (player.hearts <= 0) { faint(); return; }
+    emit('toast', 'Bulutlara düştün!', 1.1);
+    respawn();
+    return;
+  }
   sfx.splash();
   burst(new THREE.Vector3(player.pos.x, (sim.waterY ?? 0) - 0.1, player.pos.z), 20, 0xbfefff, { speed: 4, up: 7, life: 0.8, grav: 18 });
   player.hearts--; emit('hud'); emit('water');
@@ -314,16 +373,18 @@ export function fellInWater() {
   emit('toast', 'Şapırt!', 0.9);
   respawn();
 }
-/** hazard('lava'|'spike', fromPos). lava: lose heart + respawn with fire particles; spike: hurt + knockback. */
-export function hazard(kind, from = player.pos) {
+/** hazard('lava'|'spike', fromPos, {toast, sfxKey}). lava: lose heart + respawn with fire particles; spike: hurt + knockback.
+ *  Returns false when it could not fire (invulnerable). opts.toast / opts.sfxKey override the lava toast / extra sample. */
+export function hazard(kind, from = player.pos, opts = {}) {
   if (kind === 'lava') {
     if (player.invuln > 0) return false;
-    sfx.lava?.(); sfx.hurt(); addTrauma(0.5); hitStop(0.08);
+    if (opts.sfxKey) playSfx(opts.sfxKey); else sfx.lava?.();
+    sfx.hurt(); addTrauma(0.5); hitStop(0.08);
     burst(player.pos.clone().add(new THREE.Vector3(0, 0.3, 0)), 24, 0xff7a1a, { speed: 4, up: 7, life: 0.7, grav: 6, size: 1.3 });
     burst(player.pos.clone().add(new THREE.Vector3(0, 0.3, 0)), 10, 0xffd166, { speed: 3, up: 5, life: 0.5, grav: 4 });
     player.hearts--; emit('hud'); emit('hazard', kind, from);
     if (player.hearts <= 0) { faint(); return true; }
-    emit('toast', 'Cız! Çok sıcak!', 1);
+    emit('toast', opts.toast ?? 'Cız! Çok sıcak!', 1);
     respawn();
     return true;
   }
@@ -336,9 +397,10 @@ export function hazard(kind, from = player.pos) {
 export function reset(spawn, facing = Math.PI) {
   if (spawn) player.spawn.set(spawn[0], spawn[1], spawn[2]);
   player.spawnFacing = facing;
+  player.maxHearts = assist.hearts;     // E4: Yardım Modu hearts apply on a new life
   player.hearts = player.maxHearts; player.coins = 0; player.crystals = 0;
   player.pos.copy(player.spawn); player.vel.set(0, 0, 0); player.extVel.set(0, 0, 0);
-  player.facing = facing; player.invuln = 0; player.controlLock = 0; player.flying = false;
+  player.facing = facing; player.invuln = 0; player.controlLock = 0; player.flying = false; player.fallCap = MAX_FALL;
   player.grounded = false; player.wasGrounded = false; player.ground = null; player.pounding = false; player.jumpChain = 0; player.chainTimer = 0; player.flip = 0;
   player.scale.set(1, 1, 1); player.scaleVel.set(0, 0, 0); player.prevY = player.pos.y;
   player.checkpoint.copy(player.spawn).sub(new THREE.Vector3(1.2, 0.2, 1.2));
@@ -363,8 +425,9 @@ export function groundAt(x, y, z) {
 }
 
 export const physics = {
-  player, colliders, solidMeshes, movers, sim, SURFACES, stepPlayer, launch, hazard, hurt, faint, respawn, fellInWater, fellInVoid, reset, clearWorld, squash, groundAt, setGround, isSolid, probeMeshes,
+  player, colliders, solidMeshes, movers, sim, SURFACES, stepPlayer, launch, hazard, hurt, faint, respawn, fellInWater, fellInVoid, reset, clearWorld, squash, groundAt, setGround, isSolid, setSolid, probeMeshes,
+  assist, setAssist, ASSIST_ON, ASSIST_OFF,
   get lastInput() { return lastInput; },
-  JUMP_H, APEX_T, GRAV, JUMP_V, RUN, STEP, WATER_Y,
+  JUMP_H, APEX_T, GRAV, JUMP_V, RUN, STEP, WATER_Y, FALL_MULT, MAX_FALL, COYOTE, POUND_SPEED,
 };
 export default physics;

@@ -3,9 +3,73 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no" />
-<title>Pıtır'ın Kristal Adası</title>
+<title>Pıtır'ın Kristal Adaları</title>
+<meta name="theme-color" content="#8fd3ff" />
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27%3E%3Ccircle cx=%2732%27 cy=%2734%27 r=%2726%27 fill=%27%23ff9f43%27/%3E%3Ccircle cx=%2724%27 cy=%2730%27 r=%274%27 fill=%27%232b2140%27/%3E%3Ccircle cx=%2740%27 cy=%2730%27 r=%274%27 fill=%27%232b2140%27/%3E%3Cpath d=%27M32 8c4-6 10-6 12-2-6 0-8 2-12 2z%27 fill=%27%236fd36a%27/%3E%3C/svg%3E" />
+<link rel="manifest" href="assets/app.webmanifest" />
+<link rel="apple-touch-icon" href="assets/icons/apple-touch-icon-180.png" />
 <link rel="stylesheet" href="src/ui/ui.css" />
+<!-- compat gate (classic ES5 script; must come BEFORE the import map). Shows a readable Turkish message instead of a blank
+     sky-blue page when the browser cannot run the game: no import maps (Safari < 16.4 / iOS <= 16.3, Chrome < 89,
+     Firefox < 108), no WebGL 2 (three r163+ has no WebGL1 path), or a module error before the game is ready. -->
+<script>
+(function () {
+  var why = null;
+  if (!(window.HTMLScriptElement && HTMLScriptElement.supports && HTMLScriptElement.supports('importmap'))) why = 'importmap';
+  else {
+    var gl = null;
+    try { gl = document.createElement('canvas').getContext('webgl2'); } catch (e) { gl = null; }
+    if (!gl) why = 'webgl2';
+    else { var l = gl.getExtension('WEBGL_lose_context'); if (l) l.loseContext(); }
+  }
+  var MSG = {
+    importmap: 'Bu tarayıcı oyunu çalıştıramıyor. iPhone/iPad için iOS 16.4 veya üstüne güncelle; bilgisayarda güncel Chrome, Safari, Firefox ya da Edge kullan.',
+    webgl2: 'Bu cihazda 3B grafik (WebGL 2) kapalı ya da desteklenmiyor. Tarayıcını güncelle veya başka bir cihaz dene.',
+    error: 'Oyun yüklenemedi. Bağlantını kontrol edip sayfayı yenile.'
+  };
+  function show(kind) {
+    if (document.getElementById('compatMsg')) return;
+    var d = document.createElement('div');
+    d.id = 'compatMsg'; d.setAttribute('role', 'alert');
+    d.style.cssText = 'position:fixed;inset:0;z-index:99;display:flex;align-items:center;justify-content:center;padding:24px;background:#8fd3ff;font:600 18px/1.45 system-ui,sans-serif;color:#2b2140;text-align:center';
+    d.innerHTML = '<div style="max-width:520px;background:#fff8e8;border:4px solid #2b2140;border-radius:24px;padding:22px 26px"><div style="font-size:42px">🍊</div><p style="margin:8px 0 16px"></p><button style="font:inherit;font-weight:900;background:#ffc93c;border:3px solid #2b2140;border-radius:14px;padding:8px 22px">Yenile</button></div>';
+    d.querySelector('p').textContent = MSG[kind];
+    d.querySelector('button').onclick = function () { location.reload(); };
+    document.body.appendChild(d);
+  }
+  window.__compat = { ok: !why, reason: why };
+  function whenBody(f) { if (document.body) f(); else document.addEventListener('DOMContentLoaded', f); }
+  if (why) { whenBody(function () { show(why); }); return; }
+  // a module/load error before window.__game.ready → message (does not fire for slow networks)
+  function onErr(e) {
+    if (window.__game && window.__game.ready) return;
+    var t = e && (e.message || (e.reason && e.reason.message) || '');
+    if (e && e.target && e.target !== window && !/\.m?js(\?|$)/.test(e.target.src || '')) return;   // ignore img/audio 404s
+    whenBody(function () { show('error'); });
+    if (window.console) console.warn('[compat] boot error', t);
+  }
+  window.addEventListener('error', onErr, true);
+  window.addEventListener('unhandledrejection', onErr);
+})();
+</script>
+<script>
+// Ayarlar → Kalite (GDD §4.7): core.js reads ?quality= once at module load, so a saved choice (or the runtime probe's
+// settings.qualityAuto) is put into the URL here, before any module runs (a relative '?…' navigation keeps the path, so it
+// works under /oyun-deneme/ too). Explicit ?quality= and ?test=1 always win.
+(function () {
+  try {
+    var p = new URLSearchParams(location.search);
+    if (p.has('quality') || p.get('test') === '1') return;
+    var s = JSON.parse(localStorage.getItem('pitir.save.v1') || 'null'), st = s && s.settings;
+    if (!st) return;
+    var q = st.quality && st.quality !== 'auto' ? st.quality : st.qualityAuto;
+    if (q !== 'high' && q !== 'medium' && q !== 'low') return;
+    p.set('quality', q);
+    location.replace('?' + p.toString() + location.hash);
+  } catch (e) { /* storage blocked: device default */ }
+})();
+</script>
+
 <script type="importmap">
 { "imports": {
   "three": "./vendor/three/three.module.js",
@@ -14,7 +78,8 @@
 </script>
 </head>
 <body>
-<!-- The engine renders into this canvas; HUD and overlays are created by src/ui/hud.js and src/ui/screens.js -->
+<!-- The engine renders into this canvas; HUD (src/ui/hud.js) and the overlays — start, Harita, pause, win card, Ayarlar,
+     Krediler (src/ui/screens.js) — are created by JS and styled by src/ui/ui.css. -->
 <canvas id="c"></canvas>
 <script type="module" src="src/main.js"></script>
 </body>

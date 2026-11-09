@@ -94,7 +94,7 @@ export function on(name, id, fn) { const un = bus.on(`signal:${name}:${id}`, fn)
 
 // ---------------------------------------------------------------- builder
 function makeBuilder(lv, seedValue) {
-  const track = { objects: [], geometries: [], materials: [], textures: [], colliders: [], lights: [], unsubs: [], props: [], flowers: [], rocks: [], trees: new Map(), pending: [], lightCount: 0, disposed: false };
+  const track = { objects: [], geometries: [], materials: [], textures: [], colliders: [], lights: [], unsubs: [], props: [], flowers: [], rocks: [], trees: new Map(), propBatches: new Map(), propCount: 0, propWarned: false, pending: [], lightCount: 0, disposed: false };
   let seed = seedValue;
   const rnd = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
   const own = (g) => { if (g?.isBufferGeometry) track.geometries.push(g); else if (g?.isMaterial) track.materials.push(g); else if (g?.isTexture) track.textures.push(g); return g; };
@@ -118,15 +118,20 @@ function makeBuilder(lv, seedValue) {
   const registerCollider = (c, mesh, { noSolid = false, raycast = true } = {}) => {
     c.delta = new THREE.Vector3(); c.surface ??= (c.bounce ? 'bounce' : 'normal'); c.mesh = mesh ?? null; c.level = lv.id;
     if (mesh) mesh.userData.collider = c;   // lets physics.probeMeshes() drop the mesh from camera/shadow probes when c.solid = false
+    c.raycast = raycast;                     // physics.setSolid(c, true) only re-adds the mesh to solidMeshes when raycast !== false
     if (noSolid) { c.noSolid = true; c.solid = false; }   // physics also honours `collider.solid = false` set later (fading platforms)
     colliders.push(c); track.colliders.push(c);
     if (mesh && raycast && !noSolid) solidMeshes.push(mesh);
     return c;
   };
 
+  // Small objects (enemies, crystals) go on core.NO_REFLECT_LAYER (E8): drawn by the camera and the shadow pass, skipped
+  // by the water mirror camera (layer 0 only).
+  const smallLayer = (o) => { o?.traverse?.((k) => k.layers.set(NO_REFLECT)); return o; };
+  const enemyLayer = (e) => { if (e?.group) smallLayer(e.group); return e; };
   const L = {
     level: lv, scene, quality, theme: () => core.theme, player, colliders, enemies: enemiesMod, physics, fx, audio, assets,
-    rnd, own, add, _track: track,
+    rnd, own, add, _track: track, cam: cameraApi.cam, smallLayer,
     emit, on,
 
     // -------------------------------------------------- terrain
@@ -161,6 +166,9 @@ function makeBuilder(lv, seedValue) {
       if (opts.flowers) L.scatter('flowers', { center: [x, z], rMin: 2, rMax: r - 1, count: opts.flowers, y: top });
       return main;
     },
+    /** mover(a, b, period, w, d, opts): a↔b oscillation (a, b = top-centre positions). E6: a mechanic may set `m.fn = (t) =>
+     *  Vector3|[x,y,z]` (top-centre at time t, seconds since load; orbiter/bob/pathMover) which replaces a↔b; `m.stopped = true`
+     *  freezes it (delta 0). Riders are carried through `m.delta` either way. */
     mover(a, b, period, w = 3, d = 3, opts = {}) {
       a = toV3(a); b = toV3(b);
       const c = L.box(a.x, a.y, a.z, w, d, 0.7, { color: 0xffd36e, topColor: 0xff9f43, steps: 'stone', ...opts });
@@ -188,7 +196,7 @@ function makeBuilder(lv, seedValue) {
       m.scale.y = 1.4; m.castShadow = true;
       const glow = new THREE.Sprite(own(new THREE.SpriteMaterial({ map: glowTex, color, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending })));
       glow.scale.setScalar(3.2);
-      g.add(glow, m); g.position.set(x, y, z); add(g);
+      g.add(glow, m); g.position.set(x, y, z); smallLayer(g); add(g);
       const c = { group: g, gem: m, base: y, taken: false, color };
       crystals.push(c); return c;
     },
@@ -221,9 +229,9 @@ function makeBuilder(lv, seedValue) {
     },
 
     // -------------------------------------------------- enemies
-    enemy(kind, ...args) { return enemiesMod.spawn(kind, L, ...args); },
-    slime(x, y, z, roam = 4, color = 0x9b5de5) { return enemiesMod.spawn('slime', L, x, y, z, roam, color); },
-    spiky(a, b, speed = 2.6) { return enemiesMod.spawn('spiky', L, a, b, speed); },
+    enemy(kind, ...args) { return enemyLayer(enemiesMod.spawn(kind, L, ...args)); },
+    slime(x, y, z, roam = 4, color = 0x9b5de5) { return enemyLayer(enemiesMod.spawn('slime', L, x, y, z, roam, color)); },
+    spiky(a, b, speed = 2.6) { return enemyLayer(enemiesMod.spawn('spiky', L, a, b, speed)); },
 
     // -------------------------------------------------- props & decoration
     /**
@@ -301,7 +309,15 @@ function makeBuilder(lv, seedValue) {
       }
       return keepClear.some(([kx, kz, r]) => Math.hypot(x - kx, z - kz) < r);
     },
-    scatter(kind, { center = [0, 0], rMin = 0, rMax = 10, count = 10, keepClear = [], margin = kind === 'trees' ? 2.5 : 0.6, y = 0, scale = [0.8, 1.4], colors = [0xff6f91, 0xffe066, 0xffffff, 0xa78bfa], kind: treeKind = 'procedural' } = {}) {
+    /**
+     * scatter(kind, opts) — seeded placement around `center` avoiding colliders. kinds: 'flowers', 'grass', 'rocks',
+     * 'trees' / 'trees:<oak|pine|palm|procedural|…>', and any kit model name ('prop:<name>' or the bare name, e.g.
+     * 'bush_round'): ≥ 8 placements of one model become one InstancedMesh per model primitive (props: `fitHeight` metres
+     * at scale 1, `tint`, `collide: 'cyl'` + `r`/`h` per unit scale, `castShadow`). Every kind counts toward
+     * `quality.maxProps` per level: placements over the budget are dropped *after* the seeded loop, so the rnd() stream (and
+     * every later placement) is identical on every tier.
+     */
+    scatter(kind, { center = [0, 0], rMin = 0, rMax = 10, count = 10, keepClear = [], margin = kind === 'trees' ? 2.5 : 0.6, y = 0, scale = [0.8, 1.4], colors = [0xff6f91, 0xffe066, 0xffffff, 0xa78bfa], kind: treeKind = 'procedural', ...propOpts } = {}) {
       const [cx, cz] = center;
       const placed = [];
       for (let tries = 0; tries < count * 20 && placed.length < count; tries++) {
@@ -311,6 +327,9 @@ function makeBuilder(lv, seedValue) {
         if (margin <= 0 && keepClear.some(([kx, kz, kr]) => Math.hypot(x - kx, z - kz) < kr)) continue;
         placed.push({ x, z, s: scale[0] + rnd() * (scale[1] - scale[0]), rx: rnd(), ry: rnd() * 6, rz: rnd(), i: placed.length });
       }
+      const room = Math.max(0, (quality.maxProps ?? Infinity) - track.propCount);
+      if (placed.length > room) { if (!track.propWarned) { track.propWarned = true; console.warn(`[world] scatter: quality.maxProps ${quality.maxProps} reached (${quality.tier}), dropping ${placed.length - room} × ${kind}`); } placed.length = room; }
+      track.propCount += placed.length;
       const base = kind.split(':');
       if (base[0] === 'trees' || base[0] === 'tree') { const k = base[1] ?? treeKind; return placed.map((p) => L.tree(p.x, p.z, { kind: k, scale: p.s, y })); }
       if (base[0] === 'flowers') { placed.forEach((p) => L.flower(p.x, y + 0.17, p.z, colors[p.i % colors.length])); return placed; }
@@ -326,8 +345,26 @@ function makeBuilder(lv, seedValue) {
         }
         return placed.map((p) => { const m = new THREE.Mesh(grassGeo, assets.flat(0x5fc24a)); m.position.set(p.x, y + 0.25, p.z); m.scale.setScalar(p.s * 0.8); m.rotation.y = p.ry; m.layers.set(NO_REFLECT); add(m); return m; });
       }
-      console.warn('[world] scatter: unknown kind', kind);
-      return placed;
+      // kit model props
+      const name = base[0] === 'prop' ? base.slice(1).join(':') : kind;
+      if (!name) { console.warn('[world] scatter: unknown kind', kind); return placed; }
+      const { collide = null, r: pr = 0.4, h: ph = 1, fitHeight = null, tint = null, castShadow = true } = propOpts;
+      if (placed.length < 8) return placed.map((p) => L.prop(name, p.x, y, p.z, { scale: p.s, rotY: p.ry, collide, r: pr * p.s, h: ph * p.s, fitHeight: fitHeight ? fitHeight * p.s : null, tint, castShadow }));
+      const key = `${name}|${tint ?? ''}|${castShadow ? 1 : 0}`;
+      if (!track.propBatches.has(key)) track.propBatches.set(key, { name, tint, castShadow, list: [] });
+      const batch = track.propBatches.get(key);
+      return placed.map((p) => {
+        const c = collide === 'cyl' ? registerCollider({ type: 'cyl', x: p.x, z: p.z, r: pr * p.s, y0: y - 0.5, y1: y + ph * p.s, bounce: 0, tags: ['prop', name] }, null) : null;
+        const rec = { x: p.x, y, z: p.z, rotY: p.ry, s: p.s, fitHeight, collider: c, propBatch: name };
+        batch.list.push(rec);
+        return rec;
+      });
+    },
+    /** camHint(box, yaw): while the player is inside `box` ({x, y, z, w, h, d} like L.trigger) the camera is offered `yaw`
+     *  (cam.suggest = {yaw, until}); it eases there whenever the look input has been idle for 1.2 s. Returns the trigger. */
+    camHint(box, yaw) {
+      const set = () => { cameraApi.cam.suggest = { yaw, until: performance.now() + 400 }; };
+      return L.trigger(box, { onEnter: set, onStay: set });
     },
     clouds(n = 14, opts = {}) {
       // one InstancedMesh for all puffs (4 per cloud); each cloud drifts along +x in world.update
@@ -393,6 +430,7 @@ function makeBuilder(lv, seedValue) {
       if (c.trigger) { const i = triggers.indexOf(c); if (i >= 0) triggers.splice(i, 1); return; }
       if (c.dynamic) { const i = dynamics.indexOf(c); if (i >= 0) { dynamics.splice(i, 1); c.dispose?.(); } return; }
       if (c.coin) { c.taken = true; c.popT = 99; return; }
+      if (c.propBatch) { if (c.collider) L.remove(c.collider); c.collider = null; return; }   // instanced scatter prop: collider only (like GLB trees)
       if (c.type === 'box' || c.type === 'cyl') {
         let i = colliders.indexOf(c); if (i >= 0) colliders.splice(i, 1);
         i = movers.indexOf(c); if (i >= 0) movers.splice(i, 1);
@@ -450,6 +488,27 @@ function finishBatches(track) {
     }).catch((e) => { console.warn('[world] tree batch failed', kind, e); return null; });
     track.pending.push(p);
   }
+  for (const [, b] of track.propBatches) {
+    const p = assets.model(b.name).then((model) => {
+      if (track.disposed) return null;
+      const bh = model.userData.bbox?.height || 1;
+      model.updateMatrixWorld(true);
+      const parts = [];
+      model.traverse((o) => { if (o.isMesh) parts.push(o); });
+      for (const part of parts) {
+        let mat = part.material;
+        if (b.tint !== null && b.tint !== undefined) { mat = L.own(mat.clone()); mat.color.multiply(c4.set(b.tint)); }
+        const im = new THREE.InstancedMesh(part.geometry, mat, b.list.length);
+        im.castShadow = b.castShadow; im.receiveShadow = true; im.name = `props:${b.name}:${part.name}`;
+        b.list.forEach((t, i) => { const k = t.fitHeight ? (t.fitHeight * t.s) / bh : t.s; e4.set(0, t.rotY, 0); q4.setFromEuler(e4); v4.set(t.x, t.y, t.z); s4.setScalar(k); m4.compose(v4, q4, s4).multiply(part.matrixWorld); im.setMatrixAt(i, m4); });
+        im.instanceMatrix.needsUpdate = true;
+        im.computeBoundingSphere();
+        L.add(im);
+      }
+      return parts.length;
+    }).catch((e) => { console.warn('[world] prop batch failed', b.name, e); return null; });
+    track.pending.push(p);
+  }
   syncCoinMesh();
 }
 function syncCoinMesh() {
@@ -486,9 +545,17 @@ export function load(lv, { seed = 7 } = {}) {
   level = lv;
   status.built = false; status.errors = []; status.coinsTotal = 0;
   const th = applyTheme(lv.theme);
-  sim.waterY = th.water ? (th.water.deathY ?? WATER_Y) : null;        // theme.water.kind 'lava' → falling in = physics.hazard('lava')
-  sim.waterKind = th.water?.kind === 'lava' ? 'lava' : 'water';
-  sim.killY = th.killY ?? -60;                                         // sky islands: water null + killY → lose a heart + respawn
+  // E3: the death line + its kind. theme.water → waterY = deathY ?? -1, kind 'lava' | 'water' (other registered sea kinds
+  // count as water); theme.water null + theme.fall {y, kind} → waterY = killY = fall.y, kind = fall.kind ?? 'cloud';
+  // theme.water null without fall → no water death, void below theme.killY ?? -60 (physics.fellInVoid).
+  if (th.water) {
+    sim.waterY = th.water.deathY ?? WATER_Y;
+    sim.waterKind = th.water.kind === 'lava' ? 'lava' : 'water';
+    sim.killY = th.killY ?? -60;
+  } else if (th.fall) {
+    sim.waterY = sim.killY = th.fall.y ?? -30;
+    sim.waterKind = th.fall.kind ?? 'cloud';
+  } else { sim.waterY = null; sim.waterKind = 'water'; sim.killY = th.killY ?? -60; }
   physics.reset(lv.spawn ?? [0, 0.1, 22], lv.spawnFacing ?? Math.PI);
   enemiesMod.reseed(flags.test ? 99 : (Date.now() & 0xffff) + 1);
   fx.clear();
@@ -533,6 +600,7 @@ export function unload() {
   physics.clearWorld();
   audio.stopLoops();
   audio.release([...(th?.ambience || []), ...(th?.music ? [th.music] : [])]);   // §11: theme loops are decoded per level
+  audio.releaseLevelMusic();                                                         // tracks switched to with audio.playMusic
   bus.emit('level:unloaded', level);
   L = null; level = null; status.built = false;
 }
@@ -542,10 +610,17 @@ const tmp = new THREE.Vector3();
 /** step(dt, t, input): movers → dynamics → physics.stepPlayer → triggers. Called from the fixed-step loop. */
 export function step(dt, t, input) {
   for (const m of movers) {
+    if (m.stopped) { m.delta.set(0, 0, 0); continue; }
     m.t += dt;
-    const k = (1 - Math.cos((m.t / m.period) * Math.PI * 2)) / 2;
     const prev = tmp.copy(m.mesh.position);
-    m.mesh.position.lerpVectors(m.a, m.b, k); m.mesh.position.y -= m.h / 2;
+    if (m.fn) {                                         // E6: function mover (orbiter / bob / pathMover) → top-centre position
+      const f = m.fn(m.t);
+      if (f?.isVector3) m.mesh.position.copy(f); else m.mesh.position.set(f[0], f[1], f[2]);
+    } else {
+      const k = (1 - Math.cos((m.t / m.period) * Math.PI * 2)) / 2;
+      m.mesh.position.lerpVectors(m.a, m.b, k);
+    }
+    m.mesh.position.y -= m.h / 2;
     m.delta.subVectors(m.mesh.position, prev);
     m.min.set(m.mesh.position.x - m.w / 2, m.mesh.position.y - m.h / 2, m.mesh.position.z - m.d / 2);
     m.max.set(m.mesh.position.x + m.w / 2, m.mesh.position.y + m.h / 2, m.mesh.position.z + m.d / 2);

@@ -4,16 +4,29 @@ import * as THREE from 'three';
 import { HDRLoader } from 'three/addons/loaders/HDRLoader.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
-export const settings = { anisotropy: 4, hdriRes: '1k' };    // core.js sets both from the quality tier ('2k' on high)
+export const settings = { anisotropy: 4, hdriRes: '1k' };    // core.js sets both from the quality tier ('2k' on high, '1k' on medium/low — E7)
 const BASE = 'assets/';
 
 // ---------------------------------------------------------------- textures
-const texLoader = new THREE.TextureLoader();
+// compat-audit D: one LoadingManager for textures + HDRIs → loadState / whenIdle() (main.js shows "Ada hazırlanıyor…").
+export const loadState = { busy: false, loaded: 0, total: 0 };
+const idleWaiters = [];
+export const loadManager = new THREE.LoadingManager(
+  () => { loadState.busy = false; idleWaiters.splice(0).forEach((f) => f(true)); },
+  (url, loaded, total) => { loadState.loaded = loaded; loadState.total = total; },
+);
+loadManager.onStart = () => { loadState.busy = true; };
+/** whenIdle(ms) → true when every queued texture/HDRI request finished, false on timeout. */
+export function whenIdle(ms = 25000) {
+  if (!loadState.busy) return Promise.resolve(true);
+  return new Promise((r) => { idleWaiters.push(r); setTimeout(() => r(false), ms); });
+}
+const texLoader = new THREE.TextureLoader(loadManager);
 const texCache = new Map();
 export function loadTex(file, { srgb = false, rep = 1 } = {}) {
   const key = `${file}|${srgb}|${rep}`;
   if (texCache.has(key)) return texCache.get(key);
-  const url = BASE + 'tex/' + file;
+  const url = BASE + 'tex/' + (settings.texDir || '') + file;   // compat-audit H: '512/' on medium/low
   // retry a couple of times: dev servers / flaky mobile networks occasionally drop a request
   let tries = 0;
   const onError = () => { if (++tries <= 2) setTimeout(() => texLoader.load(url, (fresh) => { t.image = fresh.image; t.needsUpdate = true; }, undefined, onError), 400 * tries); else console.warn('[assets] texture failed', file); };
@@ -92,7 +105,7 @@ export function loadHDRI(id, res = settings.hdriRes) {
   if (hdrCache.has(key)) return hdrCache.get(key);
   const other = res === '2k' ? '1k' : '2k';
   const candidates = HDRI_FILES[id] ? [HDRI_FILES[id]] : [`${id}_${res}.hdr`, `${id}_${other}.hdr`, `${id}.hdr`];
-  const loader = new HDRLoader();
+  const loader = new HDRLoader(loadManager);
   const tryNext = (i) => new Promise((resolve, reject) => {
     if (i >= candidates.length) return reject(new Error('HDRI not found: ' + id));
     loader.load(BASE + 'hdri/' + candidates[i], (tex) => { tex.mapping = THREE.EquirectangularReflectionMapping; resolve(tex); }, undefined, () => tryNext(i + 1).then(resolve, reject));
@@ -107,13 +120,32 @@ const gltfLoader = new GLTFLoader();
 const modelCache = new Map();      // name → Promise<Group> (the master copy; model() returns clones)
 export const MODEL_INFO = {        // known bounds (metres, model rests on y=0) – filled/overridden at load
 };
+/**
+ * E7: GLB post-process. A material with `transmission > 0` (KHR_materials_transmission: Lantern_01's glass) forces an
+ * extra transmission render pass per frame and is slow on phones, so it is replaced by an emissive
+ * MeshStandardMaterial({ color, emissive: 0xffd080, emissiveIntensity: 0.6 }) keeping the colour/map/name. The model cache
+ * holds the swapped material, so every clone shares it.
+ */
+export const GLASS_EMISSIVE = 0xffd080;
+function swapTransmission(m) {
+  if (!m || !(m.transmission > 0)) return m;
+  const n = new THREE.MeshStandardMaterial({ color: m.color ?? 0xffffff, map: m.map ?? null, emissive: GLASS_EMISSIVE, emissiveIntensity: 0.6, roughness: Math.min(m.roughness ?? 0.2, 0.4), metalness: 0, transparent: (m.opacity ?? 1) < 1, opacity: m.opacity ?? 1, side: m.side });
+  n.name = (m.name || 'glass') + ':glass-swap'; n.userData.glassSwap = true;
+  m.dispose();
+  return n;
+}
 function loadModel(name) {
   if (modelCache.has(name)) return modelCache.get(name);
   const p = new Promise((resolve, reject) => {
     let tries = 0;
     const attempt = () => gltfLoader.load(BASE + 'models/' + name + '.glb', (gltf) => {
       const root = gltf.scene;
-      root.traverse((o) => { if (o.isMesh) { o.castShadow = true; o.receiveShadow = true; if (o.material?.map) o.material.map.anisotropy = settings.anisotropy; } });
+      root.traverse((o) => {
+        if (!o.isMesh) return;
+        o.castShadow = true; o.receiveShadow = true;
+        if (Array.isArray(o.material)) o.material = o.material.map(swapTransmission); else o.material = swapTransmission(o.material);
+        for (const m of Array.isArray(o.material) ? o.material : [o.material]) if (m?.map) m.map.anisotropy = settings.anisotropy;
+      });
       root.updateMatrixWorld(true);
       const box = new THREE.Box3().setFromObject(root);
       const size = box.getSize(new THREE.Vector3());
@@ -132,5 +164,5 @@ export function model(name) {
 }
 export function modelInfo(name) { return MODEL_INFO[name] || null; }
 
-export const assets = { settings, loadTex, pbrTex, flat, pbr, setTheme, loadHDRI, model, modelInfo, MODEL_INFO };
+export const assets = { settings, loadTex, pbrTex, flat, pbr, setTheme, loadHDRI, model, modelInfo, MODEL_INFO, GLASS_EMISSIVE };
 export default assets;

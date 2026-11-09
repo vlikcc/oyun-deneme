@@ -166,6 +166,51 @@ Each mechanic is a module `src/engine/mechanics/<name>.js` exporting `install(L,
 * **Enemies** — `enemies.register(kind, { spawn(L, ...args) → entity, update(e, dt, ctx), onStomp(e), touch: 'hurt'|'stomp' })`; `L.enemy(kind, ...args)`.
 * **Signals** — `world.emit('switch', id)` / `world.on('switch', id, fn)` for key/door/switch wiring within a level.
 
+### 7.1 Final `L.*` mechanic signatures (integration gate — island authors rely on this list)
+
+One line per primitive: signature → return value. Positions are world metres; `top` = walkable surface height; `c` = a
+collider from `L.box` / `L.cyl`; `[x, y, z]` arrays and `THREE.Vector3` are both accepted where a point is taken. All
+player-facing text is Turkish; every primitive is cleaned up with the level (no manual dispose). Details live in each
+module's header comment (`src/engine/mechanics/<file>.js`). Signals are `L.emit/L.on(name, id, ...args)` = `world.emit/on`.
+
+| Primitive | Signature → returns | Notes |
+|---|---|---|
+| crumble (§3.1) | `L.crumble(c, { skin: 'rock'\|'wood'\|'ice'\|'cloud' = 'rock', delay = 1.0, respawn = 5, look })` → `c` | delay ≥ 1.0 s, × `assist.crumble`; warn at delay − 0.5; respawn pops back; a level `mat` is kept unless `look: true`. |
+| ice (§3.2) | `L.ice(c, { mat, steps })` → `c` | `c.surface = 'ice'`, snow steps, ice top unless the level gave its own top; glide/scrape audio per level. |
+| lava pool (§3.3) | `L.lava(x, top, z, w, d, { color = 0xff5a1f, glow = 0xffb060, speed = 0.08, scale = 4, bubbles })` → `{ mesh, trigger, bubbles, material, top, setLevel(y) }` | Trigger burns (`hazard('lava')`); no collider. Lava sea: `theme.water = { kind: 'lava', color, glow, speed, level }`. |
+| cannon (§3.4) | `L.cannon(x, top, z, { to: [x, y, z], apex = 8, locked = null, rotY, lockedText, need = 4 })` → `{ x, top, z, mouth, to, apex, base, group, T, locked, state, unlock(), lock(), fire(), point(t), coins(n), lastLanding, flights }` | Drum r 1.2 h 1.4 (mouth = top + 1.4); lands exactly on `to`; `locked` = signal id (`'lanterns'` → count ≥ `need`). All in `L.cannons`. |
+| geyser (§3.8) | `L.geyser(x, top, z, { period = 3, phase = 0, lift = 22, model = 'geyser', tint = 0x8c7f74 })` → `{ x, top, z, period, phase, lift, group, column, state, launches, u }` | `phase` in seconds; 0.6 s telegraph, 0.8 s eruption; launch zone r 1.3 h 2.5; no collider. All in `L.geysers`. |
+| wind (§3.5) | `L.wind({ x, y, z, w, h, d }, dir: [x, y, z] \| Vector3 (y ignored), speed ≤ 4, { gust = 0, phase = 0, color })` → `{ trigger, mesh, dir, speed, gust, enabled, inside, gustAt(t), setSpeed(v) }` | Horizontal push only (x/z), × `assist.wind`; gust in Hz, phase in turns; off during cannon flights. |
+| updraft (§3.5) | `L.updraft(x, z, r, y0, y1, { lift = 14, color })` → `{ x, z, r, y0, y1, lift, enabled, inside, lifting, entries, column, mesh }` | Lifts while feet ≤ y1 (≈ 6 m/s climb); cancels jump/pound; not a collider. |
+| orbiter (§3.6) | `L.orbiter(center, r, period, { w = 3, d = 3, phase = 0, cw = true, stopped = false, ...boxOpts })` → mover collider (`m.orbit`, `m.angleAt(t)`) | `cw: true` = clockwise seen from above (the GDD formula's sign is reversed); `phase` in turns. |
+| bob (§3.6) | `L.bob(c \| [x, y, z], amp ≤ 0.35, period ≥ 3, { w = 3, d = 3, phase = 0, stopped = false, crestSfx = 'bubble_pop', ...boxOpts })` → mover collider | Accepts an existing `L.box` (converted in place); `phase` in turns (kumsal 0/.25/.5/.75). |
+| pathMover (§3.6) | `L.pathMover(fn(t) → Vector3 \| [x, y, z], w = 3, d = 3, { stopped = false, ...boxOpts })` → mover collider | `fn` gives the top-centre; riders carried; `m.stopped` freezes it. |
+| switch (§3.7) | `L.switch(x, top, z, id, { pound = false, timed = 0 })` → `{ c, id, pressed, press(), release() }` | Emits `('switch', id, true/false)`; `timed` × `assist.timed`; red cap = pound-only. |
+| riser (§3.7) | `L.riser(c, dy, dur = 1.5, id, { signal, count })` → riser record | Moves `c` by `dy` on `('switch'\|'lantern', id, true)`, back on `false`; `id = 'lanterns'` rises when lit count ≥ `count` (default all). |
+| key (§3.7) | `L.key(x, y, z, id)` → key record | Pickup → `player.keys.add(id)`, HUD 🔑, emits `('key', id, true)`; lost on faint (`false`). |
+| door (§3.7) | `L.door(x, top, z, w, d, h, id)` → door record | Opens when bumped with key `id`, emits `('door', id, true)`; else "Kilitli! Anahtar lazım.". |
+| lantern (§3.7) | `L.lantern(x, z, id, { y })` → lantern record | Stands on the ground under (x, z) unless `y`; lights on touch, emits `('lantern', id, true)` + `('lanterns', 'count', n)`; HUD 🏮 n/N (set `level.lanterns` = N). |
+| heart (§3.10) | `L.heart(x, y, z)` → `{ heart: true, group, pos, taken }` | +1 heart up to `player.maxHearts`; never respawns in a run. |
+| vista (§3.9) | `L.vista(x, y, z, { title, yaw = current, pitch = 0.3, dist = 18 })` → trigger | Once per run; saves `levels[id].vista`; bus `'vista'`. |
+| secret (§3.9) | `L.secret(x, y, z, { coins = 8, r = 2, pound = false, ringR = 2.2 })` → `{ secret: true, coins, found, reveal() }` | Coins count in `coinsTotal` from the start; found by entering the 3×2×3 box (or a pound within `r`); saves `levels[id].secret`. |
+| boss (§3.11) | `L.boss(x, y, z, { arenaR = 8, hp = 3 (Yardım 2), waitFor: { name, id, value }, autoStart = true, portal: [x, y, z, rotY], crystalColor, slimeColor, color })` → boss entity (`start()`, `hp`, `state`) | Enemy kind `'boss'`; (x, y, z) = arena floor centre; numeric `value` means "arg ≥ value"; reward crystal is pre-built (counts in `level.crystals`); emits `('boss', 'start'\|'landed'\|'hit'\|'dead')`. |
+
+Enemy kinds (`L.enemy(kind, ...args)` → entity; every speed × `assist.enemySpeed`):
+
+| Kind | Call → returns | Notes |
+|---|---|---|
+| slime (built-in) | `L.slime(x, y, z, roam = 4, color = 0x9b5de5)` = `L.enemy('slime', …)` → entity | Wanders within `roam`; stompable. |
+| spiky (built-in) | `L.enemy('spiky', a, b, speed = 2.6)` → entity | Patrols a↔b; not stompable. |
+| crab (§3.12) | `L.crab(a, b, { speed = 2.4, pause = 0.6 } \| speed)` = `L.enemy('crab', a, b, opts)` → entity | Side-steps a↔b (feet points), 0.6 s pauses; stompable. |
+| bat / bird (§3.12) | `L.bat(home, { r = 4, h = 1.5, skin: 'bat'\|'bird', speed = 4, range = 6, circleSpeed = 2.5 })` = `L.enemy('bat', home, opts)` → entity | Circles `home` (ground point) at height h; swoops when Pıtır < 6 m; stomp/pound. |
+| boulder (§3.12) | `L.boulder(a, b, { every = 5, duration = 3, r = 1.1, skin: 'snow'\|'lava', delay = 1 })` = `L.enemy('boulder', a, b, opts)` → entity | Rolls a→b (ground points) every `every` s; hurts (`hazard('spike')`), jump it; splashes if b is under water. |
+| boss | see `L.boss` above | |
+
+Theme-side additions (not `L.*`): `theme.particles = 'snow'|'embers'|'leaves'|'fireflies'|'sparkles'|'none'` (src/engine/ambientfx.js,
+one draw, ≤ 400 points) and `theme.sun.moon = true | [dx, dy, dz] | { dir, color, size }`; `theme.water.kind = 'lava'` (lava.js).
+Hidden test levels (one per module, `?level=<id>&test=1`, all imported by src/levels/index.js): `test`, `test-crumble`,
+`test-lava`, `test-cannon`, `test-wind`, `test-signals`, `test-boss`, `test-fx`.
+
 ## 8. Test hooks (`window.__game`) — required, used by tools/smoke.mjs
 
 ```js
@@ -209,8 +254,11 @@ localStorage is unavailable (in-memory fallback).
 * Performance: ≤ 300 draw calls on high tier per level (`renderer.info.render.calls` is shown in `?debug=1` HUD), ≤ 150k triangles, props instanced via `InstancedMesh` when `L.scatter` places ≥ 8 of one kind.
 * All UI strings Turkish; keep the existing visual language (cream card, ink outline, gold buttons; CSS in src/ui/ui.css).
 * Run `node tools/smoke.mjs --level=<id>` (or `--all`) before declaring a level or engine change done; `node --check` every file.
-* (impl note) The draw-call budget is measured per *whole* frame (`core.stats()` after `core.render()`: shadow pass + water
-  reflection pass + main pass) and is **≤ 350 calls on high** (≤ 300 on medium, ≤ 200 on low); kristal measures 326 / 271 / 172.
+* (impl note, superseded by GDD §5.2 — see §15) The draw-call budget is the **GL-wrapped** count of a whole frame
+  (`core.stats().glDraws` after `core.render()`: shadow pass + water reflection pass + main pass, every `gl.draw*` call
+  counted under `?debug=1` / `?test=1`): **≤ 900 on high, ≤ 500 on medium, ≤ 250 on low**, enforced by `tools/smoke.mjs`
+  for the run's `--quality` (default high). `renderer.info` numbers (`core.stats().calls`) are informational only. The
+  "≤ 300 draw calls" bullet above and the older "≤ 350 / 300 / 200" figures are void.
 
 ## 11. Audio loading (impl note, added after the Zapsplat download)
 
@@ -330,8 +378,9 @@ Appended by the engine refactor; each item names the section it clarifies.
 * `cam.suggestYaw` (radians|null): camera eases toward it when the player has not orbited for 1.5 s; triggers may set it.
 * Every mechanic module ships its own hidden test level `src/levels/_test_<name>.js` (id `test-<name>`, excluded from the
   campaign) and must pass `node tools/smoke.mjs --level=test-<name>`.
-* `src/levels/index.js` imports all campaign level files statically (kristal, kumsal, volkan, buz, orman, gok, kale); a level that
-  is not built yet exports `{ id, name, order, comingSoon: true }` and the map shows "Yakında".
+* `src/levels/index.js` imports all campaign level files statically in GDD §2.1 order (kristal, kumsal, kar, volkan, orman, gok,
+  fener, then the bonus kanyon); a level that is not built yet exports `{ id, name, order, subtitle, comingSoon: true }` and the
+  map shows "Yakında".
 
 ## 13. Implementation notes (impl note) — refactor completion (engine + level 1 + §12 wiring)
 
@@ -380,8 +429,9 @@ Each item names the section it clarifies. Everything in §12 is implemented and 
   `'jump'` hop must be ≤ 6.5 m across / ≤ 2.5 m up — kristal's path was rewritten to 31 such waypoints.
 * **§12 levels (impl note)** — `src/levels/index.js` exports `LEVELS` (campaign incl. comingSoon placeholders), `PLAYABLE`,
   `isPlayable(lv)`, `levelById`, `nextLevel(id)` (null when the next island is not built → the win screen hides "Sonraki Ada").
-  Placeholders `kumsal.js, volkan.js, buz.js, orman.js, gok.js, kale.js` exist (orders 2–7, Turkish names/subtitles): replace the
-  file in place, keep `id` and `order`. Level select renders them as `li.level-card[data-soon="1"][data-locked="1"]` with
+  Placeholders `kumsal.js, kar.js, volkan.js, orman.js, gok.js, fener.js` (orders 2–7) and the bonus `kanyon.js` (order 8,
+  `bonus: true`, `unlockStars: 15`) exist with the GDD §2.1 Turkish names/subtitles: replace the file in place, keep `id` and
+  `order`. (`buz.js` / `kale.js` were removed with the GDD roster.) Level select renders them as `li.level-card[data-soon="1"][data-locked="1"]` with
   "Yakında" in `.lv-best`; clicking one toasts "Yakında!".
 * **§11 audio (impl note)** — `audio.step(set)` plays `step_<set>_N` round-robin (`sand` = `step_sand_1..3` + `step_sand_dry`),
   decoded lazily on first use (a soft synth tick plays until then); `player.js` calls it at each foot contact while running
@@ -427,7 +477,7 @@ Each item names the section it clarifies. Everything in §12 is implemented and 
 * **§3 exposure** — `renderer.toneMappingExposure = 1.12` (monolith: 1.05) is deliberate: re-tuned together with
   `DEFAULT_THEME.environmentIntensity = 0.35` for the HDRI/PBR pipeline. Do not "fix" it back.
 * **§5 sun** — see the §5 impl note: the directional light follows `theme.sun.dir`.
-* **§10 budget** — see the §10 impl note: ≤ 350 whole-frame calls on high.
+* **§10 budget** — see the §10 impl note (now the GL-wrapped 900 / 500 / 250 budget of GDD §5.2, §15).
 * **§8 raycast probes** — `world.load()` calls `scene.updateMatrixWorld(true)` before the camera snap, movers refresh their
   `matrixWorld` inside `world.step()`, and `__game.test.tick()` refreshes the scene after `world.update()`: `groundBelow`, the
   blob shadow / ground-pound gate and the camera pull-in are correct without a rendered frame (test ticks never render).
@@ -439,3 +489,99 @@ Each item names the section it clarifies. Everything in §12 is implemented and 
 * **§7 death timing** — water / lava / void checks run inside `physics.stepPlayer` (per 120 Hz sub-step), so a death can
   trigger up to 1/120 s earlier than the monolith's once-per-frame check.
 * **Clouds** — every cloud `InstancedMesh` batch is flagged `needsUpdate` after the drift (a second `L.clouds()` call used to freeze).
+
+## 15. Implementation notes (impl note) — engine phase for the 7-island campaign (GDD §3.0 E1–E10)
+
+Everything below is implemented and covered by `node tools/engine-check.mjs` (61 assertions through `window.__game`).
+Engineers of the next phase edit **only their own files**: the stubs listed here exist so nobody touches `core.js`,
+`world.js`, `physics.js`, `mechanics/index.js` or `main.js` again.
+
+* **File layout (impl note)** — `src/engine/mechanics/{crumble,ice,lava,cannon,geyser,wind,movers,signals,heart,vista,boss,
+  enemies-extra}.js` each export `name` (the file name) and `install(L, ctx)`; `mechanics/index.js` imports all twelve
+  statically, `MECHANICS` is in that order, and `install()` runs each once per level load (after `L` exists, before
+  `level.build(L)`; a throwing install logs `console.error`). Code that must run once at startup (enemy kinds, water kinds)
+  may run at module top level. `src/engine/ambientfx.js` exports `init()`; `main.js` calls it once at boot before the first
+  level loads — put every `core.registerParticles` / `core.registerWaterKind` call there (or in a mechanic module's top level).
+  Roster files: `kristal kumsal kar volkan orman gok fener` (orders 1–7) + `kanyon` (order 8, `bonus: true`, `unlockStars: 15`).
+* **Registries (impl note)** —
+  `core.registerParticles(name, factory)` with `factory(scene, quality, theme) → { update(dt, t), dispose() } | null`;
+  `applyTheme` disposes the previous system and builds `theme.particles`; unknown/unregistered names are a silent no-op,
+  a throwing factory/update logs `console.warn` and is dropped. `core.registerWaterKind(kind, factory)` with
+  `factory(opts, { scene, quality, assets, THREE }) → { object?: Object3D, update?(dt, t), dispose?() } | null`; `setWater(true,
+  { kind, … })` (from `theme.water`) uses a registered kind first, else the built-in plane (`'lava'` flat emissive plane,
+  `'cloud'` white cloud sea), and on the next `setWater` removes `object` from the scene and calls `dispose()`; a throwing
+  factory falls back to the built-in plane (`console.warn`). `'water'` cannot be overridden. Registering `'lava'` replaces the
+  built-in lava sea (the GDD §3.3 shader belongs in `lava.js`).
+* **Seas & death lines (E3)** — `world.load`: `theme.water` → `sim.waterY = water.deathY ?? -1`, `sim.waterKind = 'lava' |
+  'water'`; `theme.water: null` + `theme.fall = { y, kind = 'cloud' }` → `sim.waterY = sim.killY = fall.y`, `sim.waterKind =
+  fall.kind`, and `applyTheme` shows the cloud-sea plane at `fall.y − 5` (`core.cloudSea`; `kind: 'void'` = no plane);
+  `theme.water: null` without `fall` → no water death, `sim.killY = theme.killY ?? -60` (`fellInVoid`, "Düştün!").
+  `physics.fellInWater()` branches: `'lava'` → `hazard('lava', pos, { toast: 'Cız! Lav!', sfxKey: 'lava_bubble_pop' })`
+  (invulnerable → plain respawn), `'cloud'` → `whoosh_dash_1`, −1 heart, "Bulutlara düştün!", bus `'water'` with arg
+  `'cloud'`; `'void'` → `fellInVoid()`; else the splash ("Şapırt!"). `physics.hazard(kind, from, { toast, sfxKey })`.
+* **Physics (E1, E2, E4)** — `physics.setSolid(c, on)` (idempotent; off: `noSolid = true, solid = false`, mesh leaves
+  `solidMeshes`, a player standing on it falls (onLeave fires); on: mesh back unless the collider was registered with
+  `raycast: false` (`c.raycast`), player lifted to the top when the capsule overlaps it with the feet below the top).
+  `player.fallCap` (default `MAX_FALL` 32) caps both the normal and the `flying` fall; `respawn()`/`reset()` restore it.
+  `physics.assist` = `{ on, coyote, enemySpeed, crumble, wind, timed, coinLoss, hearts, eruption }`, filled by
+  `physics.setAssist(on)` from `ASSIST_OFF` (0.1, 1, 1, 1, 1, true, 3, 1) / `ASSIST_ON` (0.18, 0.75, 1.5, 0.7, 1.5, false, 5,
+  0.65). Coyote reads `assist.coyote` every step; `faint()` keeps the coins when `!coinLoss`; `player.maxHearts =
+  assist.hearts` on `reset()` and `faint()`. Mechanics multiply at use time (`delay * physics.assist.crumble`, enemy speed
+  `* assist.enemySpeed`, …); `boss.js` reads `assist.on`. `main.js` applies `save.settings.assist` on every level load
+  (`window.__game.applySettings()` applies all settings immediately). Exports added: `FALL_MULT, MAX_FALL, COYOTE, POUND_SPEED`.
+* **Camera (E5)** — `cam.auto` (default `flags.touch`; `settings.autoCam` `null` = device default, `true/false` = player's
+  choice), `cam.suggest = { yaw, until /* performance.now() ms */ }` (set by `L.camHint(box, yaw)`, a trigger refreshing it
+  while inside; idle threshold 1.2 s), `cam.suggestYaw` unchanged (1.5 s), `cam.override = { yaw, pitch, dist, t = 1, hold =
+  Infinity }` (also `cameraApi.setOverride(o)` / `clearOverride()`): smoothstep tween over `t` s, look input ignored,
+  auto-clears after `t + hold`, pitch/dist restored over 0.6 s; bus `'cam:override'` (`true`, override) / (`false`) —
+  `main.js` hides the HUD and the touch layer (`touch.setVisible`) meanwhile. Priority: override > suggest > suggestYaw >
+  auto. Auto never swings round when Pıtır runs toward the camera (|Δ| > 2.4 rad) and scales with speed (> 1.5 m/s).
+  `cam.sens` (`settings.camSens`, "Kamera hızı") and `cam.invertY` apply inside `cameraApi.look()` (mouse, touch, pad) and
+  to Q/E look. Tests: set `cam.lastLook = performance.now() - 5000` to skip the idle wait.
+* **Movers (E6)** — `m.fn = (t) => Vector3 | [x, y, z]` (top-centre, `t` = seconds since load, advanced by `world.step`)
+  replaces a↔b; `m.stopped = true` freezes (delta 0); `delta` and `mesh.updateMatrixWorld()` as before.
+* **Assets (E7)** — any GLB material with `transmission > 0` becomes `MeshStandardMaterial({ color, map, emissive:
+  0xffd080, emissiveIntensity: 0.6 })` (`userData.glassSwap = true`) in the model cache (Lantern_01: 1 swapped). HDRIs: `_2k`
+  on high, `_1k` on medium/low (`assets.settings.hdriRes`), unchanged.
+* **Render (E8)** — "layer 2" in the GDD is the mask value: small objects use `core.NO_REFLECT_LAYER` (index 1, mask 2):
+  coins, flowers, grass, particles, blob, sign bubbles and now crystals and every enemy spawned through `L.enemy/slime/spiky`
+  (`L.smallLayer(obj)` does it for anything else). The Water.js mirror camera keeps its default mask 1 (layer 0 only).
+  `quality` gained `shadows` (false on low → `renderer.shadowMap.enabled = false`, `sun.castShadow = false`, blob stays),
+  `reflectEvery` (1 high, 2 medium: the mirror re-renders every 2nd `core.render()`), `maxParticles` (300/150/60, for
+  ambient systems) and `drawBudget` (900/500/250; `core.DRAW_BUDGET`). GL draw counter: under `?debug=1`/`?test=1` the
+  context's `drawElements/drawArrays/drawElementsInstanced/drawArraysInstanced/drawRangeElements` and
+  `WEBGL_multi_draw` (`drawcount`) are wrapped; `core.render()` resets it; `core.stats()` = `{ calls, triangles, geometries,
+  textures, glDraws /* last render, null when off */, glFrames, drawBudget, tier }`; `__game.test.report()` adds `glDraws,
+  drawCalls, drawBudget, quality`. Measured (kristal, after 120 ticks): **high 257–298, medium 298 / 215 alternating,
+  low 85–104** GL draws (the GDD's "~1,850" predates the §13 batching; on this build the GL count equals `renderer.info`).
+* **Smoke budget (impl note)** — `tools/smoke.mjs` sets `?quality=` to `--quality` (default `high`, also with `--touch`),
+  renders 4 frames after the ticks and takes the worst of the last two `glDraws`; over budget → problem `gldraws`. The JSON
+  line carries `quality`, `glDraws`, `glDrawsFrames`, `drawCalls`; a `>> <id> [tier]: n problem(s), glDraws x/budget,
+  testPath …` line follows each level.
+* **Save v2 (E9)** — key stays `pitir.save.v1`, `save.VERSION = 2`; `save.migrate(blob)` is pure (v1 → v2 additive, v2 →
+  missing defaults filled, `migratedFrom: 1` recorded, unknown fields kept, owned cosmetics unioned with
+  `['none', 'scarf:4dabf7']`) and the migrated object is written back on first read. Fields per GDD §4.4 except
+  `settings.autoCam: null` (device default, see camera). Settings: `mute, music, musicVol 0.6, sfxVol 0.9, quality 'auto',
+  qualityAuto null, invertY, hints, assist, autoCam, camSens 1.0, simpleTouch, leftHanded, reduceShake` (the "Kamera hızı"
+  slider is `camSens`). New helpers: `save.levelFlag(id, key, value = true)` (vista/secret), `save.attempt(id)` (main.js
+  counts every campaign start), `save.levelResult(id, { …, assist })` (no time star, record in `bestTimeAssist`; also
+  `stats.wins++`), `save.KEY`, `save._reload()` (test hook). Writes stay immediate; `pagehide`/hidden also flush.
+* **Bus (E10)** — the engine emits `'respawn'(pos)`, `'faint'`, `'pound'(pos, groundCollider)`, `'level:unloaded'(level)`
+  (plus `'cam:override'(active)`); mechanics subscribe with `L.on`-style cleanup (`bus.on` returns an unsubscribe — push it
+  to `L._track.unsubs` or remove it on `'level:unloaded'`). `window.__game.bus` is exposed for tests.
+* **Builder additions (impl note)** — `L.camHint(box, yaw)`, `L.cam` (the camera state), `L.smallLayer(obj)`.
+  `L.scatter(kind, opts)` also takes kit model names (`'prop:<name>'` or the bare name, e.g. `'bush_round'`): ≥ 8
+  placements → one `InstancedMesh` per model primitive (named `props:<name>:<part>`; opts `fitHeight` metres at scale 1,
+  `tint`, `castShadow`, `collide: 'cyl'` with `r`/`h` per unit scale), < 8 → `L.prop` groups; it returns records
+  `{ x, y, z, rotY, s, collider, propBatch }` (`L.remove(record)` drops the collider only, like GLB trees). Every scatter kind
+  counts toward `quality.maxProps` per level; extra placements are dropped *after* the seeded loop (one `console.warn`), so
+  the `L.rnd()` stream is identical on every tier.
+* **Audio (impl note)** — `audio.playMusic(key|null, { crossfade = 1.5 })` crossfades the music mid-level (eruption, boss,
+  temple); every key it plays is released by `world.unload` (`audio.releaseLevelMusic()`), the theme ambience/music keys
+  as before. `audio.playLoop(key, { id, vol, gain, bus: 'sfx'|'music'|'amb'|GainNode, fadeIn, crossfade })` returns null and
+  starts decoding when the sample is not ready (call again later); `audio.setLoopGain(id, value, tau)`,
+  `audio.isLooping(id)`, `audio.stopLoop(id, fade)`, `audio.stopLoops()` (world.unload), `audio.setVolumes({ sfx, music })`.
+* **Checks run for this change** — `node --check` on every touched file; `node tools/smoke.mjs --all` at high / medium /
+  low (kristal 0 problems, glDraws 257 / 257 / 85, testPath 31 / 0 failed); `node tools/smoke.mjs --level=test` (0
+  problems); `node tools/flow-check.mjs` (22/22 incl. the roster + "Yakında" steps); `node tools/probe-check.mjs`;
+  `node tools/case-check.mjs`; `node tools/engine-check.mjs` (61/61).

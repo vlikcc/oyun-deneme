@@ -65,15 +65,16 @@ export function read() {
     }
   } else current.jumpHeld = false;
   current.ix = ix; current.iy = iy; current.look = lk;
-  touch.merge(current);
+  if (settings.enabled) touch.merge(current);          // touch axes + A/B edges + jumpHeld (touch.js); dropped while disabled
+  else touch.clearEdges?.();
   const len = Math.hypot(current.ix, current.iy);
   if (len > 1) { current.ix /= len; current.iy /= len; }
   current.yaw = cam.yaw;
   return current;
 }
 let padPrevStart = false;
-export function clearEdges() { current.jump = false; current.pound = false; }
-export function setEnabled(v) { settings.enabled = v; if (!v) { keys.clear(); clearEdges(); } }
+export function clearEdges() { current.jump = false; current.pound = false; touch.clearEdges?.(); }
+export function setEnabled(v) { settings.enabled = v; if (!v) { keys.clear(); clearEdges(); touch.releaseAll?.(); } }
 
 export const input = { read, clearEdges, setEnabled, settings, releasePointer, requestPointer, touch };
 export default input;

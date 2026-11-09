@@ -1,0 +1,57 @@
+/* Touch controls (src/engine/touch.js, GDD §5.1, docs/research/mobile-readiness.md §2.5). Loaded by touch.init().
+   #touch sits right after the canvas without a z-index: the HUD (painted later in the DOM) and .overlay (z 10) stay above it.
+   Sizes use clamp()/vmin; every edge offset adds the safe-area inset (index.html sets viewport-fit=cover). */
+:root {
+  --sa-t: env(safe-area-inset-top, 0px); --sa-r: env(safe-area-inset-right, 0px);
+  --sa-b: env(safe-area-inset-bottom, 0px); --sa-l: env(safe-area-inset-left, 0px);
+  --tbtn: clamp(56px, 17vmin, 96px);
+  --tgap-x: calc(4vmin + 8px); --tgap-y: calc(5vmin + 6px);
+}
+body.touch { overscroll-behavior: none; -webkit-touch-callout: none; -webkit-tap-highlight-color: transparent; }
+
+#touch { position: fixed; inset: 0; touch-action: none; display: none; -webkit-user-select: none; user-select: none; }
+body.touch[data-state="play"] #touch:not([hidden]) { display: block; }
+body.touch-portrait #touch { display: none !important; }
+
+/* dynamic stick: placed at the first touch by JS (translate to the finger), --stick = 2 × radius (set by JS too) */
+#stick { --stick: clamp(96px, 32vmin, 192px); position: absolute; left: 0; top: 0; width: var(--stick); height: var(--stick);
+  margin: calc(var(--stick) / -2) 0 0 calc(var(--stick) / -2); border-radius: 50%; border: 3px solid rgba(43, 33, 64, .45);
+  background: rgba(255, 248, 232, .2); opacity: 0; transition: opacity .12s; pointer-events: none; }
+#stick.show { opacity: 1; }
+#stick .knob { position: absolute; left: 50%; top: 50%; width: 40%; height: 40%; border-radius: 50%; background: rgba(255, 248, 232, .92);
+  border: 3px solid var(--ink, #2b2140); box-shadow: 0 3px 0 var(--ink, #2b2140); transform: translate(-50%, -50%); }
+
+/* A / B buttons (bottom-right; Solak mirrors them to the bottom-left) */
+#touch .tbtn { position: absolute; width: var(--tbtn); height: var(--tbtn); padding: 0; border-radius: 50%; border: 3px solid var(--ink, #2b2140);
+  background: rgba(255, 248, 232, .8); box-shadow: 0 4px 0 var(--ink, #2b2140); font: inherit; font-weight: 900;
+  font-size: calc(var(--tbtn) * .38); line-height: 1; color: var(--ink, #2b2140); touch-action: none; -webkit-user-select: none; user-select: none;
+  cursor: pointer; outline: none; }
+#touch .tbtn.down { transform: translateY(3px); box-shadow: 0 1px 0 var(--ink, #2b2140); background: var(--gold, #ffc93c); }
+#touch .tbtn[data-btn="jump"] { right: calc(var(--sa-r) + var(--tgap-x)); bottom: calc(var(--sa-b) + var(--tgap-y)); }
+#touch .tbtn[data-btn="pound"] { width: calc(var(--tbtn) * .72); height: calc(var(--tbtn) * .72); font-size: calc(var(--tbtn) * .28);
+  right: calc(var(--sa-r) + var(--tgap-x) + var(--tbtn) * 1.08); bottom: calc(var(--sa-b) + var(--tgap-y) + var(--tbtn) * .62);
+  background: rgba(255, 228, 240, .8); }
+body.touch-left #touch .tbtn[data-btn="jump"] { right: auto; left: calc(var(--sa-l) + var(--tgap-x)); }
+body.touch-left #touch .tbtn[data-btn="pound"] { right: auto; left: calc(var(--sa-l) + var(--tgap-x) + var(--tbtn) * 1.08); }
+
+/* pause pill: only a fallback — the HUD's own #pauseBtn (painted above the layer) is used when it exists */
+#touch .tbtn.pill-btn { width: 44px; height: 44px; border-radius: 999px; font-size: 18px; background: var(--cream, #fff8e8);
+  top: calc(var(--sa-t) + 64px); right: calc(var(--sa-r) + 16px); }
+body:has(#pauseBtn) #touch .tbtn.pill-btn { display: none; }
+
+/* first-use hint, bottom centre between the stick and the buttons; fades once the stick is used */
+#touch .touch-hint { position: absolute; left: 50%; bottom: calc(var(--sa-b) + 10px); transform: translateX(-50%); max-width: 46vw;
+  text-align: center; font-size: clamp(11px, 2vmin + 3px, 14px); font-weight: 800; background: rgba(43, 33, 64, .65); color: var(--cream, #fff8e8);
+  padding: 5px 12px; border-radius: 999px; pointer-events: none; transition: opacity .6s; }
+#touch.used .touch-hint, #touch .touch-hint[hidden] { opacity: 0; }
+
+/* portrait prompt: full screen, above every overlay; the game is paused while it shows */
+#rotate { position: fixed; inset: 0; z-index: 50; display: grid; place-items: center; touch-action: none;
+  background: radial-gradient(ellipse at center, #b5e4ff, #6fb8e8); padding: calc(var(--sa-t) + 16px) calc(var(--sa-r) + 16px) calc(var(--sa-b) + 16px) calc(var(--sa-l) + 16px); }
+#rotate[hidden] { display: none; }
+#rotate .rotate-card { background: var(--cream, #fff8e8); border: 4px solid var(--ink, #2b2140); border-radius: 28px; box-shadow: 0 10px 0 var(--ink, #2b2140);
+  padding: 26px 30px; text-align: center; max-width: min(92vw, 420px); }
+#rotate .rotate-icon { font-size: clamp(48px, 18vmin, 96px); line-height: 1.1; animation: pitir-rotate 1.8s ease-in-out infinite; display: inline-block; }
+#rotate .rotate-text { margin-top: 10px; font-size: clamp(20px, 6vmin, 30px); font-weight: 900; color: var(--ink, #2b2140); }
+@keyframes pitir-rotate { 0%, 30% { transform: rotate(0deg); } 60%, 100% { transform: rotate(-90deg); } }
+@media (prefers-reduced-motion: reduce) { #rotate .rotate-icon { animation: none; } }

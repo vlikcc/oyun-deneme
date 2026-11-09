@@ -21,8 +21,8 @@ export function init() {
   if (!Ctx) return null;
   ac = new Ctx();
   master = ac.createGain(); master.gain.value = state.muted ? 0 : 0.55; master.connect(ac.destination);
-  sfxBus = ac.createGain(); sfxBus.gain.value = 0.9; sfxBus.connect(master);
-  musicBus = ac.createGain(); musicBus.gain.value = 0.22; musicBus.connect(master);
+  sfxBus = ac.createGain(); sfxBus.gain.value = vols.sfx; sfxBus.connect(master);
+  musicBus = ac.createGain(); musicBus.gain.value = 0.22 * vols.music; musicBus.connect(master);
   ambBus = ac.createGain(); ambBus.gain.value = 0.5; ambBus.connect(master);
   state.ready = true;
   loadSamples().then(() => { setAmbience(wantedLoops); });
@@ -146,15 +146,17 @@ export function step(set = 'grass') {
  * playLoop(key, {vol, bus, fadeIn, crossfade}) — a looping sample. With `crossfade` (seconds) the buffer is re-triggered
  * `crossfade` s before its end with overlapping fades instead of a hard loop (music tracks, §11: 0.5 s).
  */
-export function playLoop(key, { vol = SAMPLE_VOL[key] ?? 0.5, bus = ambBus, fadeIn = 2.5, crossfade = 0, id = key } = {}) {
+export function playLoop(key, { vol = SAMPLE_VOL[key] ?? 0.5, bus = ambBus, fadeIn = 2.5, crossfade = 0, id = key, gain = 1 } = {}) {
   if (!ac || loops.has(id)) return loops.get(id) || null;
-  const b = samples[key]; if (!b) return null;
+  const b = samples[key]; if (!b) { ensure([key]); return null; }   // not decoded yet: start decoding, call again later
+  if (typeof bus === 'string') bus = { sfx: sfxBus, music: musicBus, amb: ambBus }[bus] ?? ambBus;
   const lg = ac.createGain(); lg.connect(bus);
-  if (fadeIn > 0) { lg.gain.setValueAtTime(0.0001, ac.currentTime); lg.gain.exponentialRampToValueAtTime(1, ac.currentTime + fadeIn); } else lg.gain.value = 1;
-  const entry = { key, gain: lg, srcs: [], timer: null, stopped: false, stop() {
+  if (fadeIn > 0) { lg.gain.setValueAtTime(0.0001, ac.currentTime); lg.gain.exponentialRampToValueAtTime(Math.max(0.0001, gain), ac.currentTime + fadeIn); } else lg.gain.value = gain;
+  // stop(fade = 0.9 s): fade out (time constant fade/3) and stop the sources after the fade
+  const entry = { key, id, gain: lg, srcs: [], timer: null, stopped: false, stop(fade = 0.9) {
     entry.stopped = true; clearTimeout(entry.timer);
-    try { lg.gain.cancelScheduledValues(ac.currentTime); lg.gain.setTargetAtTime(0.0001, ac.currentTime, 0.3); } catch {}
-    for (const s of entry.srcs) { try { s.stop(ac.currentTime + 1.2); } catch {} }
+    try { lg.gain.cancelScheduledValues(ac.currentTime); lg.gain.setTargetAtTime(0.0001, ac.currentTime, Math.max(0.02, fade / 3)); } catch {}
+    for (const s of entry.srcs) { try { s.stop(ac.currentTime + fade + 0.3); } catch {} }
   } };
   if (!crossfade) {
     const src = ac.createBufferSource(); src.buffer = b; src.loop = true;
@@ -179,11 +181,18 @@ export function playLoop(key, { vol = SAMPLE_VOL[key] ?? 0.5, bus = ambBus, fade
   loops.set(id, entry);
   return entry;
 }
-export function stopLoop(key) {
+export function stopLoop(key, fade) {
   const l = loops.get(key); if (!l) return;
-  try { l.stop(); } catch {}
+  try { l.stop(fade); } catch {}
   loops.delete(key);
 }
+/** setLoopGain(id, value, tau = 0.1) — smoothly set a running loop's gain (0…1+; e.g. wind / ice-glide loops by strength). */
+export function setLoopGain(id, value, tau = 0.1) {
+  const l = loops.get(id); if (!l || !ac) return false;
+  try { l.gain.gain.cancelScheduledValues(ac.currentTime); l.gain.gain.setTargetAtTime(Math.max(0, value), ac.currentTime, tau); } catch {}
+  return true;
+}
+export function isLooping(id) { return loops.has(id); }
 export function stopLoops() { for (const k of [...loops.keys()]) stopLoop(k); }
 /** setAmbience(['amb_waves', …]) — called by world.load from theme.ambience; safe before the context exists. */
 export function setAmbience(keys = []) {
@@ -216,6 +225,26 @@ function startSynthMusic() {
   }, 100);
 }
 function stopSynthMusic() { if (musicTimer) { clearInterval(musicTimer); musicTimer = null; } }
+/**
+ * playMusic(key|null, {crossfade = 1.5}) — switch the music track mid-level with a crossfade: the current track fades out
+ * over `crossfade` s while `key` fades in (null → the synth tune). Used for eruption / boss / temple music changes.
+ * Every key played this way is released (decoded buffer dropped) by world.unload through releaseLevelMusic().
+ */
+const levelMusic = new Set();
+export function playMusic(key = null, { crossfade = 1.5 } = {}) {
+  wantedMusic = key;
+  if (key) levelMusic.add(key);
+  if (!ac || !state.musicEnabled) return;
+  const old = loops.get('__music');
+  if (old && old.key === key) return;
+  stopSynthMusic();
+  if (old) { loops.delete('__music'); try { old.stop(crossfade); } catch {} }
+  state.musicPlaying = true;
+  if (!key) { startSynthMusic(); return; }
+  ensure([key]).then(() => { if (wantedMusic === key && state.musicEnabled && samples[key] && !loops.has('__music')) playLoop(key, { id: '__music', bus: musicBus, fadeIn: Math.max(0.05, crossfade), vol: 0.8, crossfade: 0.5 }); });
+}
+/** releaseLevelMusic() — drop the decoded buffers of every track started with playMusic since the last call (world.unload). */
+export function releaseLevelMusic() { const keys = [...levelMusic]; levelMusic.clear(); release(keys); return keys; }
 /** setMusic(key|null): sampled loop `key` or the synth tune when null; respects state.musicEnabled. */
 export function setMusic(key = null) {
   wantedMusic = key;
@@ -227,8 +256,16 @@ export function setMusic(key = null) {
   state.musicPlaying = true;
 }
 export function setMusicEnabled(v) { state.musicEnabled = !!v; setMusic(wantedMusic ?? null); }
+/** setVolumes({sfx, music}) — 0…1 bus levels from settings.sfxVol / settings.musicVol (safe before the context exists). */
+const vols = { sfx: 0.9, music: 1 };
+export function setVolumes({ sfx: sv, music: mv } = {}) {
+  if (Number.isFinite(sv)) vols.sfx = Math.max(0, Math.min(1, sv));
+  if (Number.isFinite(mv)) vols.music = Math.max(0, Math.min(1, mv)) / 0.6;   // 0.6 (GDD default) = the original 0.22 music level
+  if (sfxBus) sfxBus.gain.value = vols.sfx;
+  if (musicBus) musicBus.gain.value = 0.22 * vols.music;
+}
 export function setMuted(v) { state.muted = !!v; if (master) master.gain.value = state.muted ? 0 : 0.55; }
 export function toggleMute() { setMuted(!state.muted); return state.muted; }
 
-export const audio = { init, resume, suspend, unlock, sfx, play, step, ensure, release, has, playLoop, stopLoop, stopLoops, setAmbience, setMusic, setMusicEnabled, setMuted, toggleMute, state, get context() { return ac; } };
+export const audio = { init, resume, suspend, unlock, sfx, play, step, ensure, release, has, playLoop, stopLoop, stopLoops, setLoopGain, isLooping, setAmbience, setMusic, playMusic, releaseLevelMusic, setMusicEnabled, setMuted, setVolumes, toggleMute, state, get context() { return ac; } };
 export default audio;

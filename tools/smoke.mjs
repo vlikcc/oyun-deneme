@@ -2,7 +2,9 @@
 // Headless smoke test for the game using the locally installed Google Chrome (software WebGL via SwiftShader).
 // Usage:  node tools/smoke.mjs [--url=http://localhost:8765/] [--level=<id>] [--frames=240] [--quality=low|medium|high] [--touch] [--viewport=390x844] [--shot=tools/out/name.png] [--script=<js file>]
 //         node tools/smoke.mjs --all            (every level listed by window.__game.levels, one after another)
-// Exit code 0 = no page errors / console errors / failed requests and the game reached state 'play'.
+// Exit code 0 = no page errors / console errors / failed requests, the game reached state 'play', the level's testPath holds
+// and the GL-wrapped draw count (core.stats().glDraws, worst of the last frames) is within the GDD §5.2 budget for the
+// run's quality: 900 high / 500 medium / 250 low (--quality defaults to high).
 // Extra checks run through window.__game (see docs/LEVEL-API.md → "Test hooks").
 import puppeteer from 'puppeteer-core';
 import fs from 'node:fs';
@@ -14,6 +16,8 @@ const FRAMES = Number(argv.frames || 240);
 const CHROME = argv.chrome || '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
 const OUT = path.resolve('tools/out'); fs.mkdirSync(OUT, { recursive: true });
 const VP = /^(\d+)x(\d+)$/.exec(String(argv.viewport || ''));   // --viewport=390x844 → phone-sized window (default 1280x800)
+const QUALITY = ['high', 'medium', 'low'].includes(argv.quality) ? argv.quality : 'high';
+const BUDGET = { high: 900, medium: 500, low: 250 };   // GDD §5.2 GL-wrapped draws per whole frame (main + shadow + reflection)
 const VIEW = VP ? { width: +VP[1], height: +VP[2], deviceScaleFactor: 1, isMobile: true, hasTouch: true } : { width: 1280, height: 800, deviceScaleFactor: 1 };
 
 const browser = await puppeteer.launch({
@@ -31,12 +35,12 @@ async function runOne(levelId) {
   const ignorable = (u) => /favicon\.ico$/.test(u);
   page.on('requestfailed', (r) => { if (ignorable(r.url())) return; const t = `${r.url()} ${r.failure()?.errorText}`; (/ERR_CONNECTION_RESET/.test(t) && /\.(mp3|jpg|hdr)$/.test(r.url()) ? warnings : problems).push({ kind: 'requestfailed', text: t }); });
   page.on('response', (r) => { if (r.status() >= 400 && !ignorable(r.url())) problems.push({ kind: 'http' + r.status(), text: r.url() }); });
-  const url = new URL(BASE); url.searchParams.set('test', '1'); if (levelId) url.searchParams.set('level', levelId); if (argv.quality) url.searchParams.set('quality', argv.quality); if (argv.touch) url.searchParams.set('touch', '1');
+  const url = new URL(BASE); url.searchParams.set('test', '1'); if (levelId) url.searchParams.set('level', levelId); url.searchParams.set('quality', QUALITY); if (argv.touch) url.searchParams.set('touch', '1');
   const t0 = Date.now();
-  const result = { level: levelId || '(default)', url: url.toString() };
+  const result = { level: levelId || '(default)', url: url.toString(), quality: QUALITY };
   try {
     await page.goto(url.toString(), { waitUntil: 'load', timeout: 60000 });
-    await page.waitForFunction(() => window.__game && (window.__game.ready === undefined || window.__game.ready === true), { timeout: 60000 });
+    await page.waitForFunction(() => window.__game && (window.__game.ready === undefined || window.__game.ready === true), { timeout: 60000, polling: 100 });   // interval polling: headless only paints rAF while pumped
     // start the game (works for the old single-level build and the new level system)
     await page.evaluate(async (lvl) => {
       const g = window.__game;
@@ -59,6 +63,18 @@ async function runOne(levelId) {
       const nan = [p.pos.x, p.pos.y, p.pos.z, p.vel.x, p.vel.y, p.vel.z].some((v) => !Number.isFinite(v));
       return { state: g.state, pos: [p.pos.x, p.pos.y, p.pos.z].map((v) => +v.toFixed(2)), nan, coins: g.coins?.length, crystals: g.crystals?.length, enemies: g.enemies?.length, colliders: g.colliders?.length, extra: g.test?.report?.() ?? null };
     });
+    // GL draw budget: render a few frames (medium re-renders the reflection every 2nd frame, the first frame after the
+    // HDRI arrives also runs PMREM) and keep the worst of the last two.
+    const gl = await page.evaluate(async () => {
+      const g = window.__game, seen = [];
+      for (let i = 0; i < 4; i++) { g.core.render(); seen.push(g.test.report().glDraws); await new Promise((r) => setTimeout(r, 0)); }
+      const r = g.test.report();
+      return { seen, glDraws: Math.max(seen[2] ?? 0, seen[3] ?? 0), calls: r.drawCalls, tier: r.quality };
+    });
+    result.glDraws = gl.glDraws; result.glDrawsFrames = gl.seen; result.drawCalls = gl.calls;
+    if (gl.tier && gl.tier !== QUALITY) problems.push({ kind: 'quality', text: `expected quality ${QUALITY}, game runs ${gl.tier}` });
+    if (gl.glDraws == null) problems.push({ kind: 'gldraws', text: 'core.stats().glDraws is null (GL counter not active under ?test=1)' });
+    else if (gl.glDraws > BUDGET[QUALITY]) problems.push({ kind: 'gldraws', text: `${gl.glDraws} GL draws exceed the ${QUALITY} budget ${BUDGET[QUALITY]} (GDD §5.2)` });
     if (result.state.nan) problems.push({ kind: 'nan', text: 'player position/velocity is NaN' });
     if (result.state.state !== 'play') problems.push({ kind: 'state', text: `expected state play, got ${result.state.state}` });
     // testPath check (docs/ARCHITECTURE.md §4): every waypoint must have ground under it; hops must respect §2 reach rules
@@ -106,14 +122,18 @@ let levels = [];
 if (argv.all) {
   const page = await browser.newPage();
   await page.goto(BASE + '?test=1', { waitUntil: 'load', timeout: 60000 });
-  await page.waitForFunction(() => window.__game, { timeout: 60000 });
+  await page.waitForFunction(() => window.__game && window.__game.ready === true, { timeout: 60000, polling: 100 });
   levels = await page.evaluate(() => (window.__game.levels || []).map((l) => l.id));
   await page.close();
   if (!levels.length) levels = [null];
 } else levels = [argv.level || null];
 
 const results = [];
-for (const id of levels) { const r = await runOne(id); results.push(r); console.log(JSON.stringify(r)); }
+for (const id of levels) {
+  const r = await runOne(id); results.push(r); console.log(JSON.stringify(r));
+  const tp = r.testPath ? `testPath ${r.testPath.waypoints}/${r.testPath.failed} failed` : 'no testPath';
+  console.log(`>> ${r.level} [${QUALITY}]: ${r.problems.length} problem(s), glDraws ${r.glDraws ?? '?'}/${BUDGET[QUALITY]}, ${tp}, ${r.ms} ms`);
+}
 await browser.close();
 const bad = results.filter((r) => r.problems.length);
 console.log(`\n${results.length - bad.length}/${results.length} level(s) clean`);
